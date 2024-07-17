@@ -46,7 +46,10 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
     public EphemeralClientOperationServiceImpl(ClientManagerDelegate clientManager) {
         this.clientManager = clientManager;
     }
-    
+
+    /**
+     * 临时实例注册
+     */
     @Override
     public void registerInstance(Service service, Instance instance, String clientId) {
         Service singleton = ServiceManager.getInstance().getSingleton(service);
@@ -63,10 +66,9 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
         client.addServiceInstance(singleton, instanceInfo);
         client.setLastUpdatedTime();
         NotifyCenter.publishEvent(new ClientOperationEvent.ClientRegisterServiceEvent(singleton, clientId));
-        NotifyCenter
-                .publishEvent(new MetadataEvent.InstanceMetadataEvent(singleton, instanceInfo.getMetadataId(), false));
+        NotifyCenter.publishEvent(new MetadataEvent.InstanceMetadataEvent(singleton, instanceInfo.getMetadataId(), false));
     }
-    
+
     @Override
     public void deregisterInstance(Service service, Instance instance, String clientId) {
         if (!ServiceManager.getInstance().containSingleton(service)) {

@@ -46,12 +46,15 @@ public class UnhealthyInstanceChecker implements InstanceBeatChecker {
     @Override
     public void doCheck(Client client, Service service, HealthCheckInstancePublishInfo instance) {
         if (instance.isHealthy() && isUnhealthy(service, instance)) {
+            // 当前实例 上次是正常的 但是 当前已经不正常了
+            // 所以需要 修改实例的状态，将其变成 healthy设置为false
             changeHealthyStatus(client, service, instance);
         }
     }
     
     private boolean isUnhealthy(Service service, HealthCheckInstancePublishInfo instance) {
         long beatTimeout = getTimeout(service, instance);
+        // 当前时间 - 最后一次心跳时间 > 超时时间
         return System.currentTimeMillis() - instance.getLastHeartBeatTime() > beatTimeout;
     }
     
@@ -60,12 +63,14 @@ public class UnhealthyInstanceChecker implements InstanceBeatChecker {
         if (!timeout.isPresent()) {
             timeout = Optional.ofNullable(instance.getExtendDatum().get(PreservedMetadataKeys.HEART_BEAT_TIMEOUT));
         }
+        // 默认 15秒
         return timeout.map(ConvertUtils::toLong).orElse(Constants.DEFAULT_HEART_BEAT_TIMEOUT);
     }
     
     private Optional<Object> getTimeoutFromMetadata(Service service, InstancePublishInfo instance) {
         Optional<InstanceMetadata> instanceMetadata = ApplicationUtils.getBean(NamingMetadataManager.class)
                 .getInstanceMetadata(service, instance.getMetadataId());
+        // 从 元数据metadata 中读取 "preserved.heart.beat.timeout"
         return instanceMetadata.map(metadata -> metadata.getExtendData().get(PreservedMetadataKeys.HEART_BEAT_TIMEOUT));
     }
     

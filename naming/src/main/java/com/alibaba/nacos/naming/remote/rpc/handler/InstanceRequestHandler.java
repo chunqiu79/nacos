@@ -29,9 +29,7 @@ import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import org.springframework.stereotype.Component;
 
 /**
- * Instance request handler.
- *
- * @author xiweng.yy
+ * 临时实例：服务注册发送的Request就是 InstanceRequest
  */
 @Component
 public class InstanceRequestHandler extends RequestHandler<InstanceRequest, InstanceResponse> {

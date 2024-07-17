@@ -293,9 +293,12 @@ public abstract class GrpcClient extends RpcClient {
     public Connection connectToServer(ServerInfo serverInfo) {
         try {
             if (grpcExecutor == null) {
+                // 创建线程池
                 this.grpcExecutor = createGrpcExecutor(serverInfo.getServerIp());
             }
+            // 端口 + 偏移量
             int port = serverInfo.getServerPort() + rpcPortOffset();
+            // 根据 ip + 端口 创建 grpc channel
             RequestGrpc.RequestFutureStub newChannelStubTemp = createNewChannelStub(serverInfo.getServerIp(), port);
             if (newChannelStubTemp != null) {
                 

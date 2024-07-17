@@ -107,6 +107,7 @@ public class TcpHealthCheckProcessor implements HealthCheckProcessorV2, Runnable
                     .reEvaluateCheckRT(task.getCheckRtNormalized() * 2, task, switchDomain.getTcpHealthParams());
             return;
         }
+        // 添加task任务
         taskQueue.add(new Beat(task, service, metadata, instance));
         MetricsMonitor.getTcpHealthCheckMonitor().incrementAndGet();
     }
@@ -119,6 +120,7 @@ public class TcpHealthCheckProcessor implements HealthCheckProcessorV2, Runnable
     private void processTask() throws Exception {
         Collection<Callable<Void>> tasks = new LinkedList<>();
         do {
+            // 从task队列中获取
             Beat beat = taskQueue.poll(CONNECT_TIMEOUT_MS / 2, TimeUnit.MILLISECONDS);
             if (beat == null) {
                 return;

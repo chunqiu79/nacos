@@ -93,6 +93,7 @@ public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealt
     public void doHealthCheck() {
         try {
             for (Service each : client.getAllPublishedService()) {
+                // 开启了 健康检查||配置在了健康检查白名单中
                 if (switchDomain.isHealthCheckEnabled(each.getGroupedServiceName())) {
                     InstancePublishInfo instancePublishInfo = client.getInstancePublishInfo(each);
                     ClusterMetadata metadata = getClusterMetadata(each, instancePublishInfo);
@@ -139,6 +140,7 @@ public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealt
     
     @Override
     public void run() {
+        // 当前 task 对应的 任务逻辑
         doHealthCheck();
     }
     

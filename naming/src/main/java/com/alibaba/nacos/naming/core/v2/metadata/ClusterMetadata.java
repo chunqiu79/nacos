@@ -33,7 +33,8 @@ public class ClusterMetadata implements Serializable {
     private static final long serialVersionUID = -80030989533083615L;
     
     private int healthyCheckPort = 80;
-    
+
+    // 默认是 tcp
     private String healthyCheckType = Tcp.TYPE;
     
     private AbstractHealthChecker healthChecker = new Tcp();

@@ -85,6 +85,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         labels.put(RemoteConstants.LABEL_MODULE, RemoteConstants.LABEL_MODULE_NAMING);
         this.rpcClient = RpcClientFactory.createClient(uuid, ConnectionType.GRPC, labels);
         this.redoService = new NamingGrpcRedoService(this);
+        // 其实这个里面会对 rpc 的 currentConnection 赋值
         start(serverListFactory, serviceInfoHolder);
     }
     
@@ -92,6 +93,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         rpcClient.serverListFactory(serverListFactory);
         rpcClient.registerConnectionListener(redoService);
         rpcClient.registerServerRequestHandler(new NamingPushRequestHandler(serviceInfoHolder));
+        // rpc start
         rpcClient.start();
         NotifyCenter.registerSubscriber(this);
     }
@@ -110,10 +112,13 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     public void registerService(String serviceName, String groupName, Instance instance) throws NacosException {
         NAMING_LOGGER.info("[REGISTER-SERVICE] {} registering service {} with instance {}", namespaceId, serviceName,
                 instance);
+        // 添加实例信息到 客户端的registeredInstances 中
+        // key：groupName + "@@" + serviceName，value：实例信息
         redoService.cacheInstanceForRedo(serviceName, groupName, instance);
+        // 真正的注册 do
         doRegisterService(serviceName, groupName, instance);
     }
-    
+
     /**
      * Execute register operation.
      *
@@ -128,7 +133,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         requestToServer(request, Response.class);
         redoService.instanceRegistered(serviceName, groupName);
     }
-    
+
     @Override
     public void deregisterService(String serviceName, String groupName, Instance instance) throws NacosException {
         NAMING_LOGGER
@@ -155,7 +160,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     @Override
     public void updateInstance(String serviceName, String groupName, Instance instance) throws NacosException {
-    
+
     }
     
     @Override
@@ -176,7 +181,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     @Override
     public void createService(Service service, AbstractSelector selector) throws NacosException {
-    
+
     }
     
     @Override
@@ -186,7 +191,6 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     @Override
     public void updateService(Service service, AbstractSelector selector) throws NacosException {
-    
     }
     
     @Override
@@ -199,7 +203,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
             }
         }
         ServiceListResponse response = requestToServer(request, ServiceListResponse.class);
-        ListView<String> result = new ListView<String>();
+        ListView<String> result = new ListView<>();
         result.setCount(response.getCount());
         result.setData(response.getServiceNames());
         return result;
@@ -207,9 +211,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     @Override
     public ServiceInfo subscribe(String serviceName, String groupName, String clusters) throws NacosException {
-        if (NAMING_LOGGER.isDebugEnabled()) {
-            NAMING_LOGGER.debug("[GRPC-SUBSCRIBE] service:{}, group:{}, cluster:{} ", serviceName, groupName, clusters);
-        }
+        NAMING_LOGGER.info("[GRPC-SUBSCRIBE] service:{}, group:{}, cluster:{} ", serviceName, groupName, clusters);
         redoService.cacheSubscriberForRedo(serviceName, groupName, clusters);
         return doSubscribe(serviceName, groupName, clusters);
     }
@@ -233,9 +235,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
     @Override
     public void unsubscribe(String serviceName, String groupName, String clusters) throws NacosException {
-        if (NAMING_LOGGER.isDebugEnabled()) {
-            NAMING_LOGGER.debug("[GRPC-UNSUBSCRIBE] service:{}, group:{}, cluster:{} ", serviceName, groupName, clusters);
-        }
+        NAMING_LOGGER.info("[GRPC-UNSUBSCRIBE] service:{}, group:{}, cluster:{} ", serviceName, groupName, clusters);
         redoService.subscriberDeregister(serviceName, groupName, clusters);
         doUnsubscribe(serviceName, groupName, clusters);
     }
@@ -263,17 +263,18 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     @Override
     public void updateBeatInfo(Set<Instance> modifiedInstances) {
     }
-    
+
     @Override
     public boolean serverHealthy() {
         return rpcClient.isRunning();
     }
-    
+
     private <T extends Response> T requestToServer(AbstractNamingRequest request, Class<T> responseClass)
             throws NacosException {
         try {
             request.putAllHeader(
                     getSecurityHeaders(request.getNamespace(), request.getGroupName(), request.getServiceName()));
+            // 读取的就是 nacos服务端的、jvm命令行、客户端配置文件 中的 namingRequestTimeout 值，默认是 -1
             Response response =
                     requestTimeout < 0 ? rpcClient.request(request) : rpcClient.request(request, requestTimeout);
             if (ResponseCode.SUCCESS.getCode() != response.getResultCode()) {

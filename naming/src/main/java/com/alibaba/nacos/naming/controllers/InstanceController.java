@@ -66,11 +66,7 @@ import java.util.Map;
 
 import static com.alibaba.nacos.naming.misc.UtilsAndCommons.DEFAULT_CLUSTER_NAME;
 
-/**
- * Instance operation controller.
- *
- * @author nkorange
- */
+// uri : /nacos/v1/ns/instance
 @RestController
 @RequestMapping(UtilsAndCommons.NACOS_NAMING_CONTEXT + UtilsAndCommons.NACOS_NAMING_INSTANCE_CONTEXT)
 public class InstanceController {
@@ -93,21 +89,18 @@ public class InstanceController {
         Collection<InstanceExtensionHandler> handlers = NacosServiceLoader.load(InstanceExtensionHandler.class);
         Loggers.SRV_LOG.info("Load instance extension handler {}", handlers);
     }
-    
+
     /**
-     * Register new instance.
-     *
-     * @param request http request
-     * @return 'ok' if success
-     * @throws Exception any error during register
+     * uri：/nacos/v1/ns/instance
+     * 注册实例 的 rest请求
      */
     @CanDistro
     @PostMapping
     @Secured(action = ActionTypes.WRITE)
     public String register(HttpServletRequest request) throws Exception {
-        
         final String namespaceId = WebUtils
                 .optional(request, CommonParams.NAMESPACE_ID, Constants.DEFAULT_NAMESPACE_ID);
+        // 这里的serviceName = groupName + "@@" + serviceName
         final String serviceName = WebUtils.required(request, CommonParams.SERVICE_NAME);
         NamingUtils.checkServiceNameFormat(serviceName);
         
@@ -117,14 +110,7 @@ public class InstanceController {
         getInstanceOperator().registerInstance(namespaceId, serviceName, instance);
         return "ok";
     }
-    
-    /**
-     * Deregister instances.
-     *
-     * @param request http request
-     * @return 'ok' if success
-     * @throws Exception any error during deregister
-     */
+
     @CanDistro
     @DeleteMapping
     @Secured(action = ActionTypes.WRITE)
@@ -138,14 +124,7 @@ public class InstanceController {
         getInstanceOperator().removeInstance(namespaceId, serviceName, instance);
         return "ok";
     }
-    
-    /**
-     * Update instance.
-     *
-     * @param request http request
-     * @return 'ok' if success
-     * @throws Exception any error during update
-     */
+
     @CanDistro
     @PutMapping
     @Secured(action = ActionTypes.WRITE)
@@ -158,15 +137,7 @@ public class InstanceController {
         getInstanceOperator().updateInstance(namespaceId, serviceName, instance);
         return "ok";
     }
-    
-    /**
-     * Batch update instance's metadata. old key exist = update, old key not exist = add.
-     *
-     * @param request http request
-     * @return success updated instances. such as '{"updated":["2.2.2.2:8080:unknown:xxxx-cluster:ephemeral"}'.
-     * @throws Exception any error during update
-     * @since 1.4.0
-     */
+
     @CanDistro
     @PutMapping(value = "/metadata/batch")
     @Secured(action = ActionTypes.WRITE)

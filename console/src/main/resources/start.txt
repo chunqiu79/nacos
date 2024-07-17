@@ -1,0 +1,4 @@
+# 设置为单机（默认为集群）
+-Dnacos.standalone=true
+# 需要指定 nacos.home 目录
+-Dnacos.home=D:\idea\project\framework-study\nacos\logs

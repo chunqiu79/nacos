@@ -110,11 +110,14 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
     
     @Override
     public void put(String key, Record value) throws NacosException {
+        // 存放实例信息到map中，将变更信息存放到队列中
         onPut(key, value);
         // If upgrade to 2.0.X, do not sync for v1.
+        // 如果是2.0.0以上版本就不执行后续逻辑
         if (ApplicationUtils.getBean(UpgradeJudgement.class).isUseGrpcFeatures()) {
             return;
         }
+        // 开启 1秒的 延迟任务
         distroProtocol.sync(new DistroKey(key, KeyBuilder.INSTANCE_LIST_KEY_PREFIX), DataOperation.CHANGE,
                 DistroConfig.getInstance().getSyncDelayMillis());
     }
@@ -143,13 +146,15 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
             datum.value = (Instances) value;
             datum.key = key;
             datum.timestamp.incrementAndGet();
+            // 存放实例信息，这个dataStore就是concurrentHashMap
             dataStore.put(key, datum);
         }
         
         if (!listeners.containsKey(key)) {
             return;
         }
-        
+
+        // 将 实例信息 添加到任务队列中
         notifier.addTask(key, DataOperation.CHANGE);
     }
     

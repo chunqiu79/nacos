@@ -90,6 +90,7 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
         final MutableHandlerRegistry handlerRegistry = new MutableHandlerRegistry();
         
         // server interceptor to set connection id.
+        // 拦截器
         ServerInterceptor serverInterceptor = new ServerInterceptor() {
             @Override
             public <T, S> ServerCall.Listener<T> interceptCall(ServerCall<T, S> call, Metadata headers,
@@ -106,9 +107,11 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                 return Contexts.interceptCall(ctx, call, headers, next);
             }
         };
-        
+
+        // 内部包含grpc请求回调
         addServices(handlerRegistry, serverInterceptor);
-        
+
+        // 构造 grpc服务端
         server = ServerBuilder.forPort(getServicePort()).executor(getRpcExecutor())
                 .maxInboundMessageSize(getInboundMessageSize()).fallbackHandlerRegistry(handlerRegistry)
                 .compressorRegistry(CompressorRegistry.getDefaultInstance())
@@ -173,10 +176,15 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                 .setResponseMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance())).build();
         
         final ServerCallHandler<Payload, Payload> payloadHandler = ServerCalls
-                .asyncUnaryCall((request, responseObserver) -> grpcCommonRequestAcceptor.request(request, responseObserver));
+                .asyncUnaryCall((request, responseObserver) -> {
+                    // 临时实例 客户端和服务端使用 grpc通信 回调这个方法
+                    // 临时实例 客户端和服务端建立连接&客户端实例注册 等都会回调这个方法
+                    grpcCommonRequestAcceptor.request(request, responseObserver);
+                });
         
         final ServerServiceDefinition serviceDefOfUnaryPayload = ServerServiceDefinition.builder(REQUEST_SERVICE_NAME)
                 .addMethod(unaryPayloadMethod, payloadHandler).build();
+        // 添加到map中
         handlerRegistry.addService(ServerInterceptors.intercept(serviceDefOfUnaryPayload, serverInterceptor));
         
         // bi stream register.

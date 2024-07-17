@@ -86,6 +86,8 @@ public class ServerListManager implements ServerListFactory, Closeable {
         this.namespace = namespace;
         initServerAddr(properties);
         if (!serverList.isEmpty()) {
+            // 这是 nacos服务端集群 的随机数，用于从 nacos服务端集群 中 随机选择1个节点
+            // 取值范围 [0, nacosServerCluster.size())
             currentIndex.set(new Random().nextInt(serverList.size()));
         } else {
             throw new NacosLoadException("serverList is empty,please check configuration");
@@ -177,7 +179,9 @@ public class ServerListManager implements ServerListFactory, Closeable {
     
     @Override
     public String genNextServer() {
+        // 先 + 1，然后currentIndex取值就变成 [1, nacosServerCluster.size() + 1)
         int index = currentIndex.incrementAndGet() % getServerList().size();
+        // 返回 1个nacos服务端地址
         return getServerList().get(index);
     }
     

@@ -93,14 +93,20 @@ public class InstanceOperatorClientImpl implements InstanceOperator {
     }
     
     /**
-     * This method creates {@code IpPortBasedClient} if it don't exist.
+     * This method creates {@code IpPortBasedClient} if it doesn't exist.
      */
     @Override
     public void registerInstance(String namespaceId, String serviceName, Instance instance) {
+        // 是否是临时实例
         boolean ephemeral = instance.isEphemeral();
+        // clientId = addr + "#" + ephemeral
+        // addr = ip + ":" + port
         String clientId = IpPortBasedClient.getClientId(instance.toInetAddr(), ephemeral);
+        // 这个里面创建 心跳|健康检查轮询任务
         createIpPortClientIfAbsent(clientId);
+        // 创建服务信息
         Service service = getService(namespaceId, serviceName, ephemeral);
+        // 注册实例信息
         clientOperationService.registerInstance(service, instance, clientId);
     }
     

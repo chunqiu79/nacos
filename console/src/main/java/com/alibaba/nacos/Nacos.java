@@ -22,9 +22,7 @@ import org.springframework.boot.web.servlet.ServletComponentScan;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Nacos starter.
- *
- * @author nacos
+ * nacos-server 本地调试启动类
  */
 @SpringBootApplication(scanBasePackages = "com.alibaba.nacos")
 @ServletComponentScan
@@ -32,6 +30,10 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Nacos {
     
     public static void main(String[] args) {
+        // 单机模式
+        System.setProperty("nacos.standalone", "true");
+        // 需要指定 nacos.home 目录
+        System.setProperty("nacos.home", "D:\\idea\\project\\framework-study\\nacos\\logs");
         SpringApplication.run(Nacos.class, args);
     }
 }

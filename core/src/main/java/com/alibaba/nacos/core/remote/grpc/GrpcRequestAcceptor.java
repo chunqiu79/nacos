@@ -74,9 +74,12 @@ public class GrpcRequestAcceptor extends RequestGrpc.RequestImplBase {
     public void request(Payload grpcRequest, StreamObserver<Payload> responseObserver) {
         
         traceIfNecessary(grpcRequest, true);
+
+        // 这个 type 其实就是 Request对应的实现类的名字 如：ServerCheckRequest
         String type = grpcRequest.getMetadata().getType();
         
         //server is on starting.
+        // 如果服务端还在启动中，客户端就来建立连接则直接返回
         if (!ApplicationUtils.isStarted()) {
             Payload payloadResponse = GrpcUtils.convert(
                     ErrorResponse.build(NacosException.INVALID_SERVER_STATUS, "Server is starting,please try later."));

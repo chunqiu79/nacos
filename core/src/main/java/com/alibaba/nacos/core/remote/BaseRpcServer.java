@@ -37,7 +37,7 @@ public abstract class BaseRpcServer {
     }
     
     /**
-     * Start sever.
+     * 启动服务端就会初始化
      */
     @PostConstruct
     public void start() throws Exception {

@@ -29,6 +29,9 @@ import java.util.List;
  * Naming Service.
  *
  * @author nkorange
+ *
+ * 服务注册
+ *
  */
 public interface NamingService {
     

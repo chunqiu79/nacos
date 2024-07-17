@@ -73,7 +73,10 @@ public class DistroFilter implements Filter {
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
     }
-    
+
+    /**
+     * 路由转发
+     */
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain)
             throws IOException, ServletException {
@@ -115,7 +118,9 @@ public class DistroFilter implements Filter {
                         "receive invalid redirect request from peer " + req.getRemoteAddr());
                 return;
             }
-            
+
+            // 找到 nacos服务端集群中的目标节点
+            // 内部是先hash再取模
             final String targetServer = distroMapper.mapSrv(distroTag);
             
             List<String> headerList = new ArrayList<>(16);

@@ -117,6 +117,7 @@ public class DistroMapper extends MemberChangeListener {
         }
         
         try {
+            // 先取hash 然后取模
             int index = distroHash(responsibleTag) % servers.size();
             return servers.get(index);
         } catch (Throwable e) {

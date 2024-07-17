@@ -173,6 +173,8 @@ public class NamingClientProxyDelegate implements NamingClientProxy {
     }
     
     private NamingClientProxy getExecuteClientProxy(Instance instance) {
+        // 判断 ephemeral 即可 ，用来表示临时和永久
+        // true - grpcClientProxy ， false - httpClientProxy
         return instance.isEphemeral() ? grpcClientProxy : httpClientProxy;
     }
     

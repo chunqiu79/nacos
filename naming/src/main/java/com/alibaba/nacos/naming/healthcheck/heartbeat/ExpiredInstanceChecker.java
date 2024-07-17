@@ -46,14 +46,18 @@ public class ExpiredInstanceChecker implements InstanceBeatChecker {
     
     @Override
     public void doCheck(Client client, Service service, HealthCheckInstancePublishInfo instance) {
+        // 获取 "nacos.naming.expireInstance" 的值，默认是true
         boolean expireInstance = ApplicationUtils.getBean(GlobalConfig.class).isExpireInstance();
         if (expireInstance && isExpireInstance(service, instance)) {
+            // 开启了 删除实例配置 && 当前实例过期了
+            // 删除当前实例信息
             deleteIp(client, service, instance);
         }
     }
     
     private boolean isExpireInstance(Service service, HealthCheckInstancePublishInfo instance) {
         long deleteTimeout = getTimeout(service, instance);
+        // 当前时间 - 最后一次心跳时间 > 超时时间
         return System.currentTimeMillis() - instance.getLastHeartBeatTime() > deleteTimeout;
     }
     
@@ -62,12 +66,14 @@ public class ExpiredInstanceChecker implements InstanceBeatChecker {
         if (!timeout.isPresent()) {
             timeout = Optional.ofNullable(instance.getExtendDatum().get(PreservedMetadataKeys.IP_DELETE_TIMEOUT));
         }
+        // 默认时间 30秒
         return timeout.map(ConvertUtils::toLong).orElse(Constants.DEFAULT_IP_DELETE_TIMEOUT);
     }
     
     private Optional<Object> getTimeoutFromMetadata(Service service, InstancePublishInfo instance) {
         Optional<InstanceMetadata> instanceMetadata = ApplicationUtils.getBean(NamingMetadataManager.class)
                 .getInstanceMetadata(service, instance.getMetadataId());
+        // 从 元数据metadata 中读取 "preserved.ip.delete.timeout" 的值
         return instanceMetadata.map(metadata -> metadata.getExtendData().get(PreservedMetadataKeys.IP_DELETE_TIMEOUT));
     }
     
