@@ -147,6 +147,7 @@ public class NamingHttpClientProxy extends AbstractNamingClientProxy {
         params.put(HEALTHY_PARAM, String.valueOf(instance.isHealthy()));
         params.put(EPHEMERAL_PARAM, String.valueOf(instance.isEphemeral()));
         params.put(META_PARAM, JacksonUtils.toJson(instance.getMetadata()));
+        // uri : /nacos/v1/ns/instance
         reqApi(UtilAndComs.nacosUrlInstance, params, HttpMethod.POST);
     }
     
@@ -358,6 +359,7 @@ public class NamingHttpClientProxy extends AbstractNamingClientProxy {
         NacosException exception = new NacosException();
         
         if (serverListManager.isDomain()) {
+            // 指定的服务端进行请求
             String nacosDomain = serverListManager.getNacosDomain();
             for (int i = 0; i < maxRetry; i++) {
                 try {
@@ -370,6 +372,7 @@ public class NamingHttpClientProxy extends AbstractNamingClientProxy {
                 }
             }
         } else {
+            // 随机选择1个服务端进行请求
             Random random = new Random();
             int index = random.nextInt(servers.size());
             

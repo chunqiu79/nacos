@@ -18,10 +18,13 @@ package com.alibaba.nacos.naming.healthcheck.v2;
 
 import com.alibaba.nacos.naming.core.v2.client.impl.IpPortBasedClient;
 import com.alibaba.nacos.naming.core.v2.metadata.NamingMetadataManager;
+import com.alibaba.nacos.naming.core.v2.pojo.InstancePublishInfo;
 import com.alibaba.nacos.naming.core.v2.pojo.Service;
+import com.alibaba.nacos.naming.healthcheck.v2.processor.HealthCheckProcessorV2Delegate;
 import com.alibaba.nacos.naming.misc.SwitchDomain;
 import com.alibaba.nacos.sys.env.EnvUtil;
 import com.alibaba.nacos.sys.utils.ApplicationUtils;
+import com.google.common.collect.Lists;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -31,12 +34,9 @@ import org.mockito.junit.MockitoJUnitRunner;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.mock.env.MockEnvironment;
 
-import java.util.Collections;
 import java.util.List;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class HealthCheckTaskV2Test {
@@ -54,6 +54,9 @@ public class HealthCheckTaskV2Test {
     
     @Mock
     private Service service;
+
+    @Mock
+    private HealthCheckProcessorV2Delegate healthCheckProcessorV2Delegate;
     
     @Before
     public void setUp() {
@@ -68,7 +71,16 @@ public class HealthCheckTaskV2Test {
     @Test
     public void testDoHealthCheck() {
         when(ipPortBasedClient.getAllPublishedService()).thenReturn(returnService());
-        
+
+        // 开启健康检查
+        when(switchDomain.isHealthCheckEnabled(startsWith("group1"))).thenReturn(true);
+
+        //
+        InstancePublishInfo instancePublishInfo = new InstancePublishInfo();
+        instancePublishInfo.setIp("127.0.0.1");
+        instancePublishInfo.setPort(8080);
+        when(ipPortBasedClient.getInstancePublishInfo(any())).thenReturn(instancePublishInfo);
+
         healthCheckTaskV2.setCheckRtWorst(1);
         healthCheckTaskV2.setCheckRtLastLast(1);
         Assert.assertEquals(1, healthCheckTaskV2.getCheckRtWorst());
@@ -83,7 +95,9 @@ public class HealthCheckTaskV2Test {
     }
     
     private List<Service> returnService() {
-        return Collections.singletonList(service);
+//        return Collections.singletonList(service);
+        Service service1 = Service.newService("dev", "group1", "service1");
+        return Lists.newArrayList(service1);
     }
     
     @Test

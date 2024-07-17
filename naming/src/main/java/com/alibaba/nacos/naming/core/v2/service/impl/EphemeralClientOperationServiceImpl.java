@@ -51,11 +51,15 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
     public EphemeralClientOperationServiceImpl(ClientManagerDelegate clientManager) {
         this.clientManager = clientManager;
     }
-    
+
+    /**
+     * 临时实例注册
+     */
     @Override
     public void registerInstance(Service service, Instance instance, String clientId) throws NacosException {
+        // 检查 实例信息是否合法
         NamingUtils.checkInstanceIsLegal(instance);
-    
+
         Service singleton = ServiceManager.getInstance().getSingleton(service);
         if (!singleton.isEphemeral()) {
             throw new NacosRuntimeException(NacosException.INVALID_PARAM,

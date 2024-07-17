@@ -100,12 +100,18 @@ public class InstanceOperatorClientImpl implements InstanceOperator {
      */
     @Override
     public void registerInstance(String namespaceId, String serviceName, Instance instance) throws NacosException {
+        // 检查 实例信息是否合法
         NamingUtils.checkInstanceIsLegal(instance);
-        
+
+        // 是否是临时实例
         boolean ephemeral = instance.isEphemeral();
+        // clientId = addr + "#" + ephemeral
         String clientId = IpPortBasedClient.getClientId(instance.toInetAddr(), ephemeral);
+        // 这个里面创建 心跳|健康检查轮询任务
         createIpPortClientIfAbsent(clientId);
+        // 创建服务信息
         Service service = getService(namespaceId, serviceName, ephemeral);
+        // 注册实例信息
         clientOperationService.registerInstance(service, instance, clientId);
     }
     
@@ -340,8 +346,11 @@ public class InstanceOperatorClientImpl implements InstanceOperator {
     }
     
     private Service getService(String namespaceId, String serviceName, boolean ephemeral) {
+        // 获取 真正的groupName
         String groupName = NamingUtils.getGroupName(serviceName);
+        // 获取 正在的serviceName
         String serviceNameNoGrouped = NamingUtils.getServiceName(serviceName);
+        // 创建服务实例 环境、组名、服务名、是否是临时实例
         return Service.newService(namespaceId, groupName, serviceNameNoGrouped, ephemeral);
     }
     

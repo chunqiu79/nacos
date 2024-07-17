@@ -64,8 +64,10 @@ public class ClientBeatCheckTaskV2 extends AbstractExecuteTask implements BeatCh
     @Override
     public void doHealthCheck() {
         try {
+            // 获取所有已发布的服务信息
             Collection<Service> services = client.getAllPublishedService();
             for (Service each : services) {
+                // 获取服务的实例信息
                 HealthCheckInstancePublishInfo instance = (HealthCheckInstancePublishInfo) client
                         .getInstancePublishInfo(each);
                 interceptorChain.doInterceptor(new InstanceBeatCheckTask(client, each, instance));
@@ -77,6 +79,7 @@ public class ClientBeatCheckTaskV2 extends AbstractExecuteTask implements BeatCh
     
     @Override
     public void run() {
+        // 当前 task 对应的 任务逻辑
         doHealthCheck();
     }
     

@@ -76,9 +76,7 @@ import java.util.Map;
 import static com.alibaba.nacos.naming.misc.UtilsAndCommons.DEFAULT_CLUSTER_NAME;
 
 /**
- * Instance operation controller.
- *
- * @author nkorange
+ * uri : /nacos/v1/ns/instance
  */
 @RestController
 @RequestMapping(UtilsAndCommons.NACOS_NAMING_CONTEXT + UtilsAndCommons.NACOS_NAMING_INSTANCE_CONTEXT)
@@ -97,13 +95,9 @@ public class InstanceController {
         Collection<InstanceExtensionHandler> handlers = NacosServiceLoader.load(InstanceExtensionHandler.class);
         Loggers.SRV_LOG.info("Load instance extension handler {}", handlers);
     }
-    
+
     /**
-     * Register new instance.
-     *
-     * @param request http request
-     * @return 'ok' if success
-     * @throws Exception any error during register
+     * 注册实例 的 rest请求
      */
     @CanDistro
     @PostMapping

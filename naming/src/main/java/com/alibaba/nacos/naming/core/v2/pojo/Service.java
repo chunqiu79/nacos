@@ -105,6 +105,7 @@ public class Service implements Serializable {
             return false;
         }
         Service service = (Service) o;
+        // 服务相同 只需要判断 namespace、groupName、serviceName是否相等即可
         return namespace.equals(service.namespace) && group.equals(service.group) && name.equals(service.name);
     }
     

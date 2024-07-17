@@ -85,7 +85,11 @@ public class NacosNamingService implements NamingService {
         properties.setProperty(PropertyKeyConst.SERVER_ADDR, serverList);
         init(properties);
     }
-    
+
+    /**
+     * spring-cloud-alibaba 就是从这里初始化的配置
+     * properties ：其实就是 com.alibaba.cloud.nacos.NacosDiscoveryProperties
+     */
     public NacosNamingService(Properties properties) throws NacosException {
         init(properties);
     }
@@ -143,11 +147,19 @@ public class NacosNamingService implements NamingService {
     public void registerInstance(String serviceName, Instance instance) throws NacosException {
         registerInstance(serviceName, Constants.DEFAULT_GROUP, instance);
     }
-    
+
+    /**
+     * spring-cloud-starter-alibaba-nacos-discovery 底层调用的就是这个接口方法
+     */
     @Override
     public void registerInstance(String serviceName, String groupName, Instance instance) throws NacosException {
+        // 检查 实例信息是否合法
         NamingUtils.checkInstanceIsLegal(instance);
+        // 对serviceName重新赋值，只需要真正的serviceName
         checkAndStripGroupNamePrefix(instance, groupName);
+        // 注册服务
+        // 这里需要对 instance的ephemeral值进行判断
+        // 默认是临时的，临时的就使用 gprc的实现，永久的就是使用 http的实现
         clientProxy.registerService(serviceName, groupName, instance);
     }
     
@@ -496,12 +508,15 @@ public class NacosNamingService implements NamingService {
     
     private void checkAndStripGroupNamePrefix(Instance instance, String groupName) throws NacosException {
         String serviceName = instance.getServiceName();
+        // serviceName 包含 @@ （其实就是判断serviceName是否是由 group + "@@" + serviceName拼接而成）
         if (NamingUtils.isServiceNameCompatibilityMode(serviceName)) {
+            // 取前面的group
             String groupNameOfInstance = NamingUtils.getGroupName(serviceName);
             if (!groupName.equals(groupNameOfInstance)) {
                 throw new NacosException(NacosException.CLIENT_INVALID_PARAM, String.format(
                     "wrong group name prefix of instance service name! it should be: %s, Instance: %s", groupName, instance));
             }
+            // 如果是的话只取 最后的serviceName
             instance.setServiceName(NamingUtils.getServiceName(serviceName));
         }
     }

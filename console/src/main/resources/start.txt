@@ -1,0 +1,2 @@
+# 设置为单机（默认为集群）
+-Dnacos.standalone=true

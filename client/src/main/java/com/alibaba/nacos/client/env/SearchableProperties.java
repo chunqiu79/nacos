@@ -212,7 +212,14 @@ class SearchableProperties implements NacosClientProperties {
     
     @Override
     public NacosClientProperties derive(Properties properties) {
+        // 加载 nacos-client 的 配置
+        // 这个里面会加载 3种 property 配置文件
+        // PropertiesPropertySource ==> 这个是client自己本身的（当然因为client下面没有添加properties文件，所以没有用）
+        // JvmArgsPropertySource ==> jvm命令行参数
+        // SystemEnvPropertySource ==> 系统参数
         final NacosClientProperties nacosClientProperties = this.derive();
+        // 加载 nacos-server 的 地址和命名空间
+        // 将 properties 中的配置加载到 PropertiesPropertySource 中
         nacosClientProperties.addProperties(properties);
         return nacosClientProperties;
     }

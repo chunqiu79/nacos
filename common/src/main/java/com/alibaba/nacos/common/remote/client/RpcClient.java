@@ -620,6 +620,7 @@ public abstract class RpcClient implements Closeable {
      * @return response from server.
      */
     public Response request(Request request) throws NacosException {
+        // rpcClientConfig.timeOutMills() 默认 3秒
         return request(request, rpcClientConfig.timeOutMills());
     }
     
@@ -634,6 +635,8 @@ public abstract class RpcClient implements Closeable {
         Response response;
         Throwable exceptionThrow = null;
         long start = System.currentTimeMillis();
+        // 在重试次数范围内 && 超时事件范围内，一直重试，直到其中一个条件不满足跳出循环（当然，如果没有超时时间限制，那么就只有次数限制了）
+        // 默认重试次数 3次（算上了第1次），默认超时时间 3秒
         while (retryTimes <= rpcClientConfig.retryTimes() && (timeoutMills <= 0
                 || System.currentTimeMillis() < timeoutMills + start)) {
             boolean waitReconnect = false;
@@ -664,6 +667,7 @@ public abstract class RpcClient implements Closeable {
                 }
                 // return response.
                 lastActiveTimeStamp = System.currentTimeMillis();
+                // 正常的话这里就return了
                 return response;
                 
             } catch (Throwable e) {
@@ -686,7 +690,9 @@ public abstract class RpcClient implements Closeable {
             retryTimes++;
             
         }
-        
+
+        // 下面的就是 最后都是异常情况，重试次数||超时时间达到了最大限制
+
         if (rpcClientStatus.compareAndSet(RpcClientStatus.RUNNING, RpcClientStatus.UNHEALTHY)) {
             switchServerAsyncOnRequestFail();
         }

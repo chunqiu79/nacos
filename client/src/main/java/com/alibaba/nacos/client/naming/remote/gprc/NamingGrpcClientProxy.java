@@ -132,16 +132,23 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     public void registerService(String serviceName, String groupName, Instance instance) throws NacosException {
         NAMING_LOGGER.info("[REGISTER-SERVICE] {} registering service {} with instance {}", namespaceId, serviceName,
                 instance);
+        // 因为 gprc的实现 存在2种情况，所以需要判断下
+
         if (instance.isEphemeral()) {
+            // ephemeral = true，临时的
             registerServiceForEphemeral(serviceName, groupName, instance);
         } else {
+            // grpcClientProxy.isAbilitySupportedByServer(AbilityKey.SERVER_SUPPORT_PERSISTENT_INSTANCE_BY_GRPC)
             doRegisterServiceForPersistent(serviceName, groupName, instance);
         }
     }
     
     private void registerServiceForEphemeral(String serviceName, String groupName, Instance instance)
             throws NacosException {
+        // 添加实例信息到 客户端的registeredInstances 中
+        // key：groupName + "@@" + serviceName，value：实例信息
         redoService.cacheInstanceForRedo(serviceName, groupName, instance);
+        // 真正的注册 do
         doRegisterService(serviceName, groupName, instance);
     }
     
@@ -444,6 +451,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         try {
             request.putAllHeader(
                     getSecurityHeaders(request.getNamespace(), request.getGroupName(), request.getServiceName()));
+            // 读取的就是 nacos服务端的、jvm命令行、客户端配置文件 中的 namingRequestTimeout 值，默认是 -1
             response = requestTimeout < 0 ? rpcClient.request(request) : rpcClient.request(request, requestTimeout);
             if (ResponseCode.SUCCESS.getCode() != response.getResultCode()) {
                 throw new NacosException(response.getErrorCode(), response.getMessage());

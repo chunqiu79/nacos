@@ -55,6 +55,8 @@ public class ClientManagerDelegate implements ClientManager {
     
     @Override
     public boolean clientConnected(String clientId, ClientAttributes attributes) {
+        // 客户端连接
+        // 临时 - EphemeralIpPortClientManager   永久 - PersistentIpPortClientManager
         return getClientManagerById(clientId).clientConnected(clientId, attributes);
     }
     
@@ -105,8 +107,11 @@ public class ClientManagerDelegate implements ClientManager {
     
     private ClientManager getClientManagerById(String clientId) {
         if (isConnectionBasedClient(clientId)) {
+            // clientId 不包含 "#"
             return connectionBasedClientManager;
         }
+        // 其实就是判断 ephemeral 是否为true
+        // false - persistentIpPortClientManager，true - ephemeralIpPortClientManager
         return clientId.endsWith(ClientConstants.PERSISTENT_SUFFIX) ? persistentIpPortClientManager : ephemeralIpPortClientManager;
     }
     

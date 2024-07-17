@@ -28,12 +28,7 @@ import org.springframework.context.annotation.FilterType;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 /**
- * Nacos starter.
- * <p>
- * Use @SpringBootApplication and @ComponentScan at the same time, using CUSTOM type filter to control module enabled.
- * </p>
- *
- * @author nacos
+ * nacos-server 本地调试启动类
  */
 @SpringBootApplication
 @ComponentScan(basePackages = "com.alibaba.nacos", excludeFilters = {
@@ -45,6 +40,8 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 public class Nacos {
     
     public static void main(String[] args) {
+        // 单机模式
+        System.setProperty("nacos.standalone", "true");
         SpringApplication.run(Nacos.class, args);
     }
 }
