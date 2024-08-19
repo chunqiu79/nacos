@@ -656,6 +656,7 @@ public abstract class RpcClient implements Closeable {
                             "Client not connected, current status:" + rpcClientStatus.get());
                 }
                 // rpc请求，所以这里就需要知道 currentConnection 是什么时候赋值的
+                // com.alibaba.nacos.common.remote.client.RpcClient.start
                 response = this.currentConnection.request(request, timeoutMills);
                 if (response == null) {
                     throw new NacosException(SERVER_ERROR, "Unknown Exception.");

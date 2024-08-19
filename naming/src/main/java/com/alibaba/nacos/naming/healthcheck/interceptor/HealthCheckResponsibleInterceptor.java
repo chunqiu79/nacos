@@ -21,14 +21,13 @@ import com.alibaba.nacos.naming.healthcheck.NacosHealthCheckTask;
 import com.alibaba.nacos.sys.utils.ApplicationUtils;
 
 /**
- * Health check responsible interceptor.
- *
- * @author xiweng.yy
+ * 将抗检查
  */
 public class HealthCheckResponsibleInterceptor extends AbstractHealthCheckInterceptor {
     
     @Override
     public boolean intercept(NacosHealthCheckTask object) {
+        //
         return !ApplicationUtils.getBean(DistroMapper.class).responsible(object.getTaskId());
     }
     

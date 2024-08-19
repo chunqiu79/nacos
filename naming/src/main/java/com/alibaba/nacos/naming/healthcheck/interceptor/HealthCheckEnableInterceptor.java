@@ -22,15 +22,14 @@ import com.alibaba.nacos.naming.misc.SwitchDomain;
 import com.alibaba.nacos.sys.utils.ApplicationUtils;
 
 /**
- * Health check enable interceptor.
- *
- * @author xiweng.yy
+ * 健康检查开启-拦截器
  */
 public class HealthCheckEnableInterceptor extends AbstractHealthCheckInterceptor {
     
     @Override
     public boolean intercept(NacosHealthCheckTask object) {
         try {
+            // 没有开启健康检查 或者 nacos-server集群不是2.x版本
             return !ApplicationUtils.getBean(SwitchDomain.class).isHealthCheckEnabled() || !ApplicationUtils
                     .getBean(UpgradeJudgement.class).isUseGrpcFeatures();
         } catch (Exception e) {
@@ -42,4 +41,5 @@ public class HealthCheckEnableInterceptor extends AbstractHealthCheckInterceptor
     public int order() {
         return Integer.MIN_VALUE;
     }
+
 }

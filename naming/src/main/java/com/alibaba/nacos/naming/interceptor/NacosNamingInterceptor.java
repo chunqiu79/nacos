@@ -34,12 +34,9 @@ public interface NacosNamingInterceptor<T extends Interceptable> {
     boolean isInterceptType(Class<?> type);
     
     /**
-     * Do intercept operation.
-     *
-     * <p>This method is the actual intercept operation.
-     *
-     * @param object need intercepted object
-     * @return true if object is intercepted, otherwise false
+     * 是否拦截
+     * true - 拦截
+     * flase - 不拦截
      */
     boolean intercept(T object);
     

@@ -62,6 +62,7 @@ public class PersistentIpPortClientManager implements ClientManager {
         clients.computeIfAbsent(client.getClientId(), s -> {
             Loggers.SRV_LOG.info("Client connection {} connect", client.getClientId());
             IpPortBasedClient ipPortBasedClient = (IpPortBasedClient) client;
+            // 初始化,内部创建心跳机制
             ipPortBasedClient.init();
             return ipPortBasedClient;
         });

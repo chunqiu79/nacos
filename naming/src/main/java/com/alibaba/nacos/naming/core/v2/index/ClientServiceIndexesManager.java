@@ -84,7 +84,10 @@ public class ClientServiceIndexesManager extends SmartSubscriber {
         result.add(ClientEvent.ClientDisconnectEvent.class);
         return result;
     }
-    
+
+    /**
+     * 所有客户端事件的监听
+     */
     @Override
     public void onEvent(Event event) {
         if (event instanceof ClientEvent.ClientDisconnectEvent) {
@@ -108,6 +111,7 @@ public class ClientServiceIndexesManager extends SmartSubscriber {
         Service service = event.getService();
         String clientId = event.getClientId();
         if (event instanceof ClientOperationEvent.ClientRegisterServiceEvent) {
+            // 客户端注册事件
             addPublisherIndexes(service, clientId);
         } else if (event instanceof ClientOperationEvent.ClientDeregisterServiceEvent) {
             removePublisherIndexes(service, clientId);

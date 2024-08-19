@@ -93,7 +93,7 @@ public class InstanceOperatorClientImpl implements InstanceOperator {
     }
     
     /**
-     * This method creates {@code IpPortBasedClient} if it doesn't exist.
+     * nacos2.x版本 注册实例
      */
     @Override
     public void registerInstance(String namespaceId, String serviceName, Instance instance) {

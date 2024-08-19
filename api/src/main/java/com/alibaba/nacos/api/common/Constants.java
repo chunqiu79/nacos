@@ -165,11 +165,17 @@ public class Constants {
     public static final String NAMING_HTTP_HEADER_SPLITTER = "\\|";
     
     public static final String DEFAULT_CLUSTER_NAME = "DEFAULT";
-    
+    /**
+     * 多久没有收到心跳标记为不健康的默认值
+     */
     public static final long DEFAULT_HEART_BEAT_TIMEOUT = TimeUnit.SECONDS.toMillis(15);
-    
+    /**
+     * 多久没有收到心跳删除实例的默认值
+     */
     public static final long DEFAULT_IP_DELETE_TIMEOUT = TimeUnit.SECONDS.toMillis(30);
-    
+    /**
+     * 心跳间隔时间的默认值
+     */
     public static final long DEFAULT_HEART_BEAT_INTERVAL = TimeUnit.SECONDS.toMillis(5);
     
     public static final String DEFAULT_NAMESPACE_ID = "public";

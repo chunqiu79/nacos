@@ -16,11 +16,10 @@
 
 package com.alibaba.nacos.api.naming;
 
+import com.alibaba.nacos.api.common.Constants;
+
 /**
- * Some keys of metadata that are recognized by Nacos.
  *
- * @author nkorange
- * @since 1.0.0
  */
 public class PreservedMetadataKeys {
     
@@ -28,11 +27,20 @@ public class PreservedMetadataKeys {
      * The key to indicate the registry source of service instance, such as Dubbo, SpringCloud, etc.
      */
     public static final String REGISTER_SOURCE = "preserved.register.source";
-    
+    /**
+     * 多久没有收到心跳标记为不健康
+     * 默认值：{@link Constants#DEFAULT_HEART_BEAT_TIMEOUT}
+     */
     public static final String HEART_BEAT_TIMEOUT = "preserved.heart.beat.timeout";
-    
+    /**
+     * 多久没有收到心跳删除实例
+     * 默认值：{@link Constants#DEFAULT_IP_DELETE_TIMEOUT}
+     */
     public static final String IP_DELETE_TIMEOUT = "preserved.ip.delete.timeout";
-    
+    /**
+     * 心跳间隔时间
+     * 默认值：{@link Constants#DEFAULT_HEART_BEAT_INTERVAL}
+     */
     public static final String HEART_BEAT_INTERVAL = "preserved.heart.beat.interval";
     
     public static final String INSTANCE_ID_GENERATOR = "preserved.instance.id.generator";

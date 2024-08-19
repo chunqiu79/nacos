@@ -29,12 +29,8 @@ import com.alibaba.nacos.naming.monitor.MetricsMonitor;
 import java.util.Collection;
 
 /**
- * Nacos naming client based ip and port.
- *
- * <p>The client is bind to the ip and port users registered. It's a abstract content to simulate the tcp session
- * client.
- *
- * @author xiweng.yy
+ * Nacos 命名客户端基于 ip和端口。
+ * 客户端绑定到用户注册的 ip和端口。这是一个抽象的内容，用于模拟 tcp会话客户端。
  */
 public class IpPortBasedClient extends AbstractClient {
     

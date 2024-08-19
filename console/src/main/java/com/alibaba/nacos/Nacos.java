@@ -34,6 +34,9 @@ public class Nacos {
         System.setProperty("nacos.standalone", "true");
         // 需要指定 nacos.home 目录
         System.setProperty("nacos.home", "D:\\idea\\project\\framework-study\\nacos\\logs");
+
+        // 可选
+
         SpringApplication.run(Nacos.class, args);
     }
 }

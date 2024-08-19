@@ -408,6 +408,7 @@ public class InstanceController {
     }
     
     private InstanceOperator getInstanceOperator() {
+        // nacos.version == 2.x
         return upgradeJudgement.isUseGrpcFeatures() ? instanceServiceV2 : instanceServiceV1;
     }
 }

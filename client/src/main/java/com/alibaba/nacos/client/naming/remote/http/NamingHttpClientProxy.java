@@ -147,6 +147,7 @@ public class NamingHttpClientProxy extends AbstractNamingClientProxy {
                 instance);
         String groupedServiceName = NamingUtils.getGroupedName(serviceName, groupName);
         if (instance.isEphemeral()) {
+            // 这个逻辑没用（是nacos1.x版本的临时实例处理逻辑）
             BeatInfo beatInfo = beatReactor.buildBeatInfo(groupedServiceName, instance);
             beatReactor.addBeatInfo(groupedServiceName, beatInfo);
         }

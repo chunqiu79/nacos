@@ -281,6 +281,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
                 throw new NacosException(response.getErrorCode(), response.getMessage());
             }
             if (responseClass.isAssignableFrom(response.getClass())) {
+                NAMING_LOGGER.info("=====客户端临时实例注册成功");
                 return (T) response;
             }
             NAMING_LOGGER.error("Server return unexpected response '{}', expected response should be '{}'",

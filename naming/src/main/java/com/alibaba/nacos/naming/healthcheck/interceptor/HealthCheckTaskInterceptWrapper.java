@@ -33,6 +33,7 @@ public class HealthCheckTaskInterceptWrapper implements Runnable {
     
     public HealthCheckTaskInterceptWrapper(NacosHealthCheckTask task) {
         this.task = task;
+        // 健康检查拦截链 - AbstractHealthCheckInterceptor 的实现类
         this.interceptorChain = HealthCheckInterceptorChain.getInstance();
     }
     

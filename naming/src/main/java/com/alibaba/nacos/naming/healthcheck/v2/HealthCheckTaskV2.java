@@ -34,11 +34,7 @@ import com.alibaba.nacos.common.utils.RandomUtils;
 import java.util.Optional;
 
 /**
- * Health check task for v2.x.
- *
- * <p>Current health check logic is same as v1.x. TODO refactor health check for v2.x.
- *
- * @author nacos
+ * 永久实例的健康检查
  */
 public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealthCheckTask {
     
@@ -69,11 +65,12 @@ public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealt
         this.taskId = client.getResponsibleId();
         this.switchDomain = ApplicationUtils.getBean(SwitchDomain.class);
         this.metadataManager = ApplicationUtils.getBean(NamingMetadataManager.class);
+        // 内部对 checkRtNormalized 进行设置
         initCheckRT();
     }
     
     private void initCheckRT() {
-        // first check time delay
+        // 第一次检查的延时时间
         checkRtNormalized =
                 2000 + RandomUtils.nextInt(0, RandomUtils.nextInt(0, switchDomain.getTcpHealthParams().getMax()));
         checkRtBest = Long.MAX_VALUE;
@@ -88,7 +85,10 @@ public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealt
     public String getTaskId() {
         return taskId;
     }
-    
+
+    /**
+     * 永久实例的健康检查机制
+     */
     @Override
     public void doHealthCheck() {
         try {

@@ -56,7 +56,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public class UpgradeJudgement extends Subscriber<MembersChangeEvent> {
     
     /**
-     * Only when all cluster upgrade upper 2.0.0, this features is true.
      * 判断nacosServer版本的，集群中的全部都是2.0.0以上的时候才会为true
      */
     private final AtomicBoolean useGrpcFeatures = new AtomicBoolean(false);

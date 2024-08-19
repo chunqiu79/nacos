@@ -18,6 +18,10 @@
 /*   数据库全名 = nacos_config   */
 /*   表名称 = config_info   */
 /******************************************/
+create schema if not exists `framework-study-nacos`;
+
+use `framework-study-nacos`;
+
 CREATE TABLE `config_info` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `data_id` varchar(255) NOT NULL COMMENT 'data_id',

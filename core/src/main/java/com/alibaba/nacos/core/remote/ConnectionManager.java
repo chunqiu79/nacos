@@ -283,12 +283,13 @@ public class ConnectionManager extends Subscriber<ConnectionLimitRuleChangeEvent
     }
     
     /**
-     * Start Task：Expel the connection which active Time expire.
+     * 启动任务：驱逐活动时间过期的连接
      */
     @PostConstruct
     public void start() {
         
-        // Start UnHealthy Connection Expel Task.
+        // 启动不健康的连接清除任务
+        // 应用启动1秒后执行, 3秒执行一次
         RpcScheduledExecutor.COMMON_SERVER_EXECUTOR.scheduleWithFixedDelay(new Runnable() {
             @Override
             public void run() {

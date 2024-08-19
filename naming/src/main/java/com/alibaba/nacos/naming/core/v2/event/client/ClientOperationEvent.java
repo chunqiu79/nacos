@@ -46,7 +46,7 @@ public class ClientOperationEvent extends Event {
     }
     
     /**
-     * Client register service event.
+     * 客户端注册事件
      */
     public static class ClientRegisterServiceEvent extends ClientOperationEvent {
         
