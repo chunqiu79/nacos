@@ -63,6 +63,7 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
             return;
         }
         InstancePublishInfo instanceInfo = getPublishInfo(instance);
+        // 1个client对应1个服务的具体实例
         client.addServiceInstance(singleton, instanceInfo);
         client.setLastUpdatedTime();
         // 发布客户端注册事件
@@ -99,6 +100,7 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
         }
         client.addServiceSubscriber(singleton, subscriber);
         client.setLastUpdatedTime();
+        // 发布客户端订阅事件
         NotifyCenter.publishEvent(new ClientOperationEvent.ClientSubscribeServiceEvent(singleton, clientId));
     }
     

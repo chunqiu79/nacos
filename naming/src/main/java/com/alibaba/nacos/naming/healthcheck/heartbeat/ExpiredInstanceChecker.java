@@ -36,11 +36,7 @@ import com.alibaba.nacos.sys.utils.ApplicationUtils;
 import java.util.Optional;
 
 /**
- * Instance beat checker for expired instance.
- *
- * <p>Delete the instance if has expired.
- *
- * @author xiweng.yy
+ * 过期实例检查类
  */
 public class ExpiredInstanceChecker implements InstanceBeatChecker {
     

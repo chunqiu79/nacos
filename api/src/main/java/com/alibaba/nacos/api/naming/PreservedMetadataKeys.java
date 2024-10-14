@@ -19,7 +19,7 @@ package com.alibaba.nacos.api.naming;
 import com.alibaba.nacos.api.common.Constants;
 
 /**
- *
+ * 客户端注册到服务端时候的元数据信息
  */
 public class PreservedMetadataKeys {
     

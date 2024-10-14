@@ -30,7 +30,7 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class NacosServiceLoader {
     
-    private static final Map<Class<?>, Collection<Class<?>>> SERVICES = new ConcurrentHashMap<Class<?>, Collection<Class<?>>>();
+    private static final Map<Class<?>, Collection<Class<?>>> SERVICES = new ConcurrentHashMap<>();
     
     /**
      * Load service.
@@ -55,7 +55,7 @@ public class NacosServiceLoader {
     
     private static <T> void cacheServiceClass(final Class<T> service, final T instance) {
         if (!SERVICES.containsKey(service)) {
-            SERVICES.put(service, new LinkedHashSet<Class<?>>());
+            SERVICES.put(service, new LinkedHashSet<>());
         }
         SERVICES.get(service).add(instance.getClass());
     }

@@ -136,7 +136,10 @@ public class UpgradeJudgement extends Subscriber<MembersChangeEvent> {
     void setUseJraftFeatures(boolean value) {
         useJraftFeatures.set(value);
     }
-    
+
+    /**
+     * 集群中所有 nacos.version == 2.x
+     */
     public boolean isUseGrpcFeatures() {
         return useGrpcFeatures.get();
     }

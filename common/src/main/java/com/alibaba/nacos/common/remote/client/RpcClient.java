@@ -291,10 +291,14 @@ public abstract class RpcClient implements Closeable {
             while (!clientEventExecutor.isTerminated() && !clientEventExecutor.isShutdown()) {
                 ConnectionEvent take;
                 try {
+                    // 获取队列中的连接事件
                     take = eventLinkedBlockingQueue.take();
+                    // 连接成功
                     if (take.isConnected()) {
                         notifyConnected();
-                    } else if (take.isDisConnected()) {
+                    }
+                    // 连接失败
+                    else if (take.isDisConnected()) {
                         notifyDisConnected();
                     }
                 } catch (Throwable e) {
@@ -382,7 +386,7 @@ public abstract class RpcClient implements Closeable {
         while (startUpRetryTimes > 0 && connectToServer == null) {
             try {
                 startUpRetryTimes--;
-                // 这里会对 nacos服务端 进行选择，随机选择1个
+                // 这里会对 nacos服务端 进行选择，轮询选择1个
                 ServerInfo serverInfo = nextRpcServer();
                 
                 LoggerUtils.printIfInfoEnabled(LOGGER, "[{}] Try to connect to server on start up, server: {}", name,
@@ -404,6 +408,7 @@ public abstract class RpcClient implements Closeable {
             // 对 currentConnection 进行赋值
             this.currentConnection = connectToServer;
             rpcClientStatus.set(RpcClientStatus.RUNNING);
+            // 将连接事件放入到队列中
             eventLinkedBlockingQueue.offer(new ConnectionEvent(ConnectionEvent.CONNECTED));
         } else {
             switchServerAsync();
@@ -656,7 +661,7 @@ public abstract class RpcClient implements Closeable {
                             "Client not connected, current status:" + rpcClientStatus.get());
                 }
                 // rpc请求，所以这里就需要知道 currentConnection 是什么时候赋值的
-                // com.alibaba.nacos.common.remote.client.RpcClient.start
+                // com.alibaba.nacos.common.remote.client.RpcClient#start
                 response = this.currentConnection.request(request, timeoutMills);
                 if (response == null) {
                     throw new NacosException(SERVER_ERROR, "Unknown Exception.");

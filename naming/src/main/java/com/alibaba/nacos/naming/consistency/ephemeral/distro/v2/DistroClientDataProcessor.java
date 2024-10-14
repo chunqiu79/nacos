@@ -124,7 +124,10 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
         if (event instanceof ClientEvent.ClientDisconnectEvent) {
             DistroKey distroKey = new DistroKey(client.getClientId(), TYPE);
             distroProtocol.sync(distroKey, DataOperation.DELETE);
-        } else if (event instanceof ClientEvent.ClientChangedEvent) {
+        }
+        // 客户端变更（客户端注册也属于变更的一种）
+        else if (event instanceof ClientEvent.ClientChangedEvent) {
+            // 服务同步
             DistroKey distroKey = new DistroKey(client.getClientId(), TYPE);
             distroProtocol.sync(distroKey, DataOperation.CHANGE);
         }
@@ -138,7 +141,9 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
     @Override
     public boolean processData(DistroData distroData) {
         switch (distroData.getType()) {
+            // 新增客户端
             case ADD:
+            // 修改客户端
             case CHANGE:
                 ClientSyncData clientSyncData = ApplicationUtils.getBean(Serializer.class)
                         .deserialize(distroData.getContent(), ClientSyncData.class);
@@ -156,8 +161,10 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
     
     private void handlerClientSyncData(ClientSyncData clientSyncData) {
         Loggers.DISTRO.info("[Client-Add] Received distro client sync data {}", clientSyncData.getClientId());
+        // 同步客户端信息
         clientManager.syncClientConnected(clientSyncData.getClientId(), clientSyncData.getAttributes());
         Client client = clientManager.getClient(clientSyncData.getClientId());
+        // 更新客户端
         upgradeClient(client, clientSyncData);
     }
     
@@ -174,6 +181,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
             InstancePublishInfo instancePublishInfo = instances.get(i);
             if (!instancePublishInfo.equals(client.getInstancePublishInfo(singleton))) {
                 client.addServiceInstance(singleton, instancePublishInfo);
+                // 发布注册事件
                 NotifyCenter.publishEvent(
                         new ClientOperationEvent.ClientRegisterServiceEvent(singleton, client.getClientId()));
             }
@@ -181,6 +189,7 @@ public class DistroClientDataProcessor extends SmartSubscriber implements Distro
         for (Service each : client.getAllPublishedService()) {
             if (!syncedService.contains(each)) {
                 client.removeServiceInstance(each);
+                // 发布注销事件
                 NotifyCenter.publishEvent(
                         new ClientOperationEvent.ClientDeregisterServiceEvent(each, client.getClientId()));
             }

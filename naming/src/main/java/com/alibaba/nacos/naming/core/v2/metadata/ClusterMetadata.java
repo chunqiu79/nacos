@@ -34,7 +34,10 @@ public class ClusterMetadata implements Serializable {
     
     private int healthyCheckPort = 80;
 
-    // 默认是 tcp
+    /**
+     * 健康检查类型
+     * 默认：tcp
+     */
     private String healthyCheckType = Tcp.TYPE;
     
     private AbstractHealthChecker healthChecker = new Tcp();

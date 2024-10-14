@@ -49,9 +49,16 @@ public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealt
     private long checkRtNormalized = -1;
     
     private long checkRtBest = -1;
-    
+
+    /**
+     * checkRtWorst == 0 表示从来没有被检查过
+     * initCheckRT()
+     */
     private long checkRtWorst = -1;
-    
+
+    /**
+     * 最新健康检查时间
+     */
     private long checkRtLast = -1;
     
     private long checkRtLastLast = -1;
@@ -92,10 +99,13 @@ public class HealthCheckTaskV2 extends AbstractExecuteTask implements NacosHealt
     @Override
     public void doHealthCheck() {
         try {
+            // 获取所有的注册过的服务
             for (Service each : client.getAllPublishedService()) {
                 // 开启了 健康检查||配置在了健康检查白名单中
                 if (switchDomain.isHealthCheckEnabled(each.getGroupedServiceName())) {
+                    // 获取实例信息
                     InstancePublishInfo instancePublishInfo = client.getInstancePublishInfo(each);
+                    // 获取实例元数据信息
                     ClusterMetadata metadata = getClusterMetadata(each, instancePublishInfo);
                     ApplicationUtils.getBean(HealthCheckProcessorV2Delegate.class).process(this, each, metadata);
                     if (Loggers.EVT_LOG.isDebugEnabled()) {

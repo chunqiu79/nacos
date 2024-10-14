@@ -36,10 +36,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
 /**
- * The manager of {@code IpPortBasedClient} and persistence.
- *
- * @author <a href="mailto:liaochuntao@live.com">liaochuntao</a>
- * @author xiweng.yy
+ * 永久实例 客户端管理
  */
 @Component("persistentIpPortClientManager")
 public class PersistentIpPortClientManager implements ClientManager {
@@ -56,7 +53,10 @@ public class PersistentIpPortClientManager implements ClientManager {
     public boolean clientConnected(String clientId, ClientAttributes attributes) {
         return clientConnected(clientFactory.newClient(clientId, attributes));
     }
-    
+
+    /**
+     * 永久实例客户端连接
+     */
     @Override
     public boolean clientConnected(final Client client) {
         clients.computeIfAbsent(client.getClientId(), s -> {

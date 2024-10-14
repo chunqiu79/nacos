@@ -66,7 +66,9 @@ import java.util.Map;
 
 import static com.alibaba.nacos.naming.misc.UtilsAndCommons.DEFAULT_CLUSTER_NAME;
 
-// uri : /nacos/v1/ns/instance
+/**
+ * uri : /nacos/v1/ns/instance
+  */
 @RestController
 @RequestMapping(UtilsAndCommons.NACOS_NAMING_CONTEXT + UtilsAndCommons.NACOS_NAMING_INSTANCE_CONTEXT)
 public class InstanceController {
@@ -106,7 +108,7 @@ public class InstanceController {
         
         final Instance instance = HttpRequestInstanceBuilder.newBuilder()
                 .setDefaultInstanceEphemeral(switchDomain.isDefaultInstanceEphemeral()).setRequest(request).build();
-        
+        // 2.x 使用 InstanceOperatorClientImpl
         getInstanceOperator().registerInstance(namespaceId, serviceName, instance);
         return "ok";
     }

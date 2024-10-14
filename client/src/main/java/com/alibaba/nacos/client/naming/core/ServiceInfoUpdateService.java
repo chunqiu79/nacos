@@ -172,7 +172,7 @@ public class ServiceInfoUpdateService implements Closeable {
                     isCancel = true;
                     return;
                 }
-                
+                // 获取服务信息
                 ServiceInfo serviceObj = serviceInfoHolder.getServiceInfoMap().get(serviceKey);
                 if (serviceObj == null) {
                     serviceObj = namingClientProxy.queryInstancesOfService(serviceName, groupName, clusters, 0, false);
@@ -190,7 +190,7 @@ public class ServiceInfoUpdateService implements Closeable {
                     incFailCount();
                     return;
                 }
-                // TODO multiple time can be configured.
+                // 1 * 6
                 delayTime = serviceObj.getCacheMillis() * DEFAULT_UPDATE_CACHE_TIME_MULTIPLE;
                 resetFailCount();
             } catch (Throwable e) {

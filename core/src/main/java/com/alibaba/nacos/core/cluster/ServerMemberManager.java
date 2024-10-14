@@ -328,9 +328,7 @@ public class ServerMemberManager implements ApplicationListener<WebServerInitial
     }
     
     /**
-     * return this cluster all members without self.
-     *
-     * @return {@link Collection} all member without self
+     * 获取服务端集群中除了自己的服务端
      */
     public List<Member> allMembersWithoutSelf() {
         List<Member> members = new ArrayList<>(serverList.values());

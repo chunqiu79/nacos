@@ -57,7 +57,11 @@ public class ServiceInfoHolder implements Closeable {
     private static final String FILE_PATH_NAMING = "naming";
     
     private static final String USER_HOME_PROPERTY = "user.home";
-    
+
+    /**
+     * 客户端订阅的信息
+     * key-服务名  value-服务信息
+     */
     private final ConcurrentMap<String, ServiceInfo> serviceInfoMap;
     
     private final FailoverReactor failoverReactor;
@@ -141,10 +145,9 @@ public class ServiceInfoHolder implements Closeable {
     }
     
     /**
-     * Process service info.
-     *
-     * @param serviceInfo new service info
-     * @return service info
+     * 处理服务信息
+     * 其实就是更新客户端的缓存
+     * 被订阅的服务名字以及被订阅的服务的信息（包含多个实例信息）对应关系
      */
     public ServiceInfo processServiceInfo(ServiceInfo serviceInfo) {
         String serviceKey = serviceInfo.getKey();
@@ -156,6 +159,7 @@ public class ServiceInfoHolder implements Closeable {
             //empty or error push, just ignore
             return oldService;
         }
+        // 覆盖本地缓存
         serviceInfoMap.put(serviceInfo.getKey(), serviceInfo);
         boolean changed = isChangedServiceInfo(oldService, serviceInfo);
         if (StringUtils.isBlank(serviceInfo.getJsonFromServer())) {
@@ -167,6 +171,7 @@ public class ServiceInfoHolder implements Closeable {
                     JacksonUtils.toJson(serviceInfo.getHosts()));
             NotifyCenter.publishEvent(new InstancesChangeEvent(serviceInfo.getName(), serviceInfo.getGroupName(),
                     serviceInfo.getClusters(), serviceInfo.getHosts()));
+            // TODO: 2024/10/10 磁盘写的目的是啥
             DiskCache.write(serviceInfo, cacheDir);
         }
         return serviceInfo;

@@ -77,6 +77,7 @@ public class DistroClientComponentRegistry {
         DistroClientTaskFailedHandler taskFailedHandler = new DistroClientTaskFailedHandler(taskEngineHolder);
         componentHolder.registerDataStorage(DistroClientDataProcessor.TYPE, dataProcessor);
         componentHolder.registerDataProcessor(dataProcessor);
+        // DistroClientDataProcessor.TYPE 对应的是 DistroClientTransportAgent
         componentHolder.registerTransportAgent(DistroClientDataProcessor.TYPE, transportAgent);
         componentHolder.registerFailedTaskHandler(DistroClientDataProcessor.TYPE, taskFailedHandler);
     }

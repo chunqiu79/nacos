@@ -107,7 +107,7 @@ public class TcpHealthCheckProcessor implements HealthCheckProcessorV2, Runnable
                     .reEvaluateCheckRT(task.getCheckRtNormalized() * 2, task, switchDomain.getTcpHealthParams());
             return;
         }
-        // 添加task任务
+        // 将task任务添加到队列中
         taskQueue.add(new Beat(task, service, metadata, instance));
         MetricsMonitor.getTcpHealthCheckMonitor().incrementAndGet();
     }
@@ -283,7 +283,7 @@ public class TcpHealthCheckProcessor implements HealthCheckProcessorV2, Runnable
                 
                 keyMap.remove(toString());
             }
-            
+            // 重置 最新健康检查时间
             healthCheckCommon.reEvaluateCheckRT(rt, task, switchDomain.getTcpHealthParams());
         }
         
@@ -362,7 +362,10 @@ public class TcpHealthCheckProcessor implements HealthCheckProcessorV2, Runnable
         public TaskProcessor(Beat beat) {
             this.beat = beat;
         }
-        
+
+        /**
+         * 永久实例 心跳执行逻辑
+         */
         @Override
         public Void call() {
             long waited = System.currentTimeMillis() - beat.getStartTime();

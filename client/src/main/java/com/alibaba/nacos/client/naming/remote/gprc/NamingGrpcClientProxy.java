@@ -58,9 +58,7 @@ import java.util.UUID;
 import static com.alibaba.nacos.client.utils.LogUtils.NAMING_LOGGER;
 
 /**
- * Naming grpc client proxy.
- *
- * @author xiweng.yy
+ * 临时实例客户端代理
  */
 public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     
@@ -128,8 +126,10 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
      * @throws NacosException nacos exception
      */
     public void doRegisterService(String serviceName, String groupName, Instance instance) throws NacosException {
+        // request的type是 NamingRemoteConstants.REGISTER_INSTANCE
         InstanceRequest request = new InstanceRequest(namespaceId, serviceName, groupName,
                 NamingRemoteConstants.REGISTER_INSTANCE, instance);
+        // 发送请求到服务端，对应的处理类 InstanceRequestHandler
         requestToServer(request, Response.class);
         redoService.instanceRegistered(serviceName, groupName);
     }
@@ -213,6 +213,7 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
     public ServiceInfo subscribe(String serviceName, String groupName, String clusters) throws NacosException {
         NAMING_LOGGER.info("[GRPC-SUBSCRIBE] service:{}, group:{}, cluster:{} ", serviceName, groupName, clusters);
         redoService.cacheSubscriberForRedo(serviceName, groupName, clusters);
+        // 真正的do 订阅
         return doSubscribe(serviceName, groupName, clusters);
     }
     

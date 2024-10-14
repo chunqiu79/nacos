@@ -49,10 +49,7 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
     private TpsMonitorManager tpsMonitorManager;
     
     /**
-     * Get Request Handler By request Type.
-     *
-     * @param requestType see definitions  of sub constants classes of RequestTypeConstants
-     * @return request handler.
+     * 通过 XxxRequest 获取对应的 Handler
      */
     public RequestHandler getByRequestType(String requestType) {
         return registryHandlers.get(requestType);
@@ -60,6 +57,8 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
     
     @Override
     public void onApplicationEvent(ContextRefreshedEvent event) {
+        // 获取所有的RequestHandler实现类
+        // key-bean名称   value-bean
         Map<String, RequestHandler> beansOfType = event.getApplicationContext().getBeansOfType(RequestHandler.class);
         Collection<RequestHandler> values = beansOfType.values();
         for (RequestHandler requestHandler : values) {
@@ -88,7 +87,14 @@ public class RequestHandlerRegistry implements ApplicationListener<ContextRefres
             } catch (Exception e) {
                 //ignore.
             }
+            // 获取对应泛型的第一个参数类型
+            /**
+             * 如：InstanceRequestHandler extends RequestHandler<InstanceRequest, InstanceResponse>
+             *     则 InstanceRequestHandler 对应的就是 InstanceRequest
+             *     最后 registryHandlers 里面添加的就是 (InstanceRequest,InstanceRequestHandler)
+              */
             Class tClass = (Class) ((ParameterizedType) clazz.getGenericSuperclass()).getActualTypeArguments()[0];
+            // key-类名   value-bean
             registryHandlers.putIfAbsent(tClass.getSimpleName(), requestHandler);
         }
     }

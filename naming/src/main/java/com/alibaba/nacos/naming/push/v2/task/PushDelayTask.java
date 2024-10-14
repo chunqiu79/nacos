@@ -35,7 +35,11 @@ public class PushDelayTask extends AbstractDelayTask {
     private boolean pushToAll;
     
     private Set<String> targetClients;
-    
+
+    /**
+     * 服务变更推送的任务
+     * 没有指定实例id
+     */
     public PushDelayTask(Service service, long delay) {
         this.service = service;
         pushToAll = true;
@@ -43,7 +47,11 @@ public class PushDelayTask extends AbstractDelayTask {
         setTaskInterval(delay);
         setLastProcessTime(System.currentTimeMillis());
     }
-    
+
+    /**
+     * 订阅推送的任务
+     * 指定了实例id
+     */
     public PushDelayTask(Service service, long delay, String targetClient) {
         this.service = service;
         this.pushToAll = false;
@@ -74,6 +82,7 @@ public class PushDelayTask extends AbstractDelayTask {
     }
     
     public boolean isPushToAll() {
+        // true-指定了客户端实例id（订阅）     false-没有指定客户端实例id（变更）
         return pushToAll;
     }
     

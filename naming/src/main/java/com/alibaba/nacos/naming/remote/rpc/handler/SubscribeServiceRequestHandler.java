@@ -35,10 +35,7 @@ import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import org.springframework.stereotype.Component;
 
 /**
- * Handler to handle subscribe service.
- *
- * @author liuzunfei
- * @author xiweng.yy
+ * 客户端订阅服务处理类
  */
 @Component
 public class SubscribeServiceRequestHandler extends RequestHandler<SubscribeServiceRequest, SubscribeServiceResponse> {
@@ -70,8 +67,11 @@ public class SubscribeServiceRequestHandler extends RequestHandler<SubscribeServ
         ServiceInfo serviceInfo = ServiceUtil.selectInstancesWithHealthyProtection(serviceStorage.getData(service),
                 metadataManager.getServiceMetadata(service).orElse(null), subscriber);
         if (request.isSubscribe()) {
+            // 订阅
+            // service-被订阅者     subscriber-订阅者
             clientOperationService.subscribeService(service, subscriber, meta.getConnectionId());
         } else {
+            // 取消订阅
             clientOperationService.unsubscribeService(service, subscriber, meta.getConnectionId());
         }
         return new SubscribeServiceResponse(ResponseCode.SUCCESS.getCode(), "success", serviceInfo);

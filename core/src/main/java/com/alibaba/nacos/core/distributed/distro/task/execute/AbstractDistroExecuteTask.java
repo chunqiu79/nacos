@@ -60,6 +60,7 @@ public abstract class AbstractDistroExecuteTask extends AbstractExecuteTask {
             return;
         }
         Loggers.DISTRO.info("[DISTRO-START] {}", toString());
+        // type = DistroClientDataProcessor.TYPE，则为true
         if (transportAgent.supportCallbackTransport()) {
             doExecuteWithCallback(new DistroExecuteCallback());
         } else {

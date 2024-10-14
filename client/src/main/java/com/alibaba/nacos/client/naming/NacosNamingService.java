@@ -146,6 +146,7 @@ public class NacosNamingService implements NamingService {
 
     /**
      * spring-cloud-starter-alibaba-nacos-discovery 底层调用的就是这个接口方法
+     * 服务注册（其实是服务的实例注册）接口
      */
     @Override
     public void registerInstance(String serviceName, String groupName, Instance instance) throws NacosException {
@@ -153,7 +154,7 @@ public class NacosNamingService implements NamingService {
         NamingUtils.checkInstanceIsLegal(instance);
         // 注册服务
         // 这里需要对 instance的ephemeral值进行判断
-        // 默认是临时的，临时的就使用 gprc的实现，永久的就是使用 http的实现
+        // 默认是临时的，临时的就使用 gprc 的实现，永久的就是使用 http 的实现
         clientProxy.registerService(serviceName, groupName, instance);
     }
 
@@ -289,21 +290,28 @@ public class NacosNamingService implements NamingService {
             throws NacosException {
         return selectInstances(serviceName, Constants.DEFAULT_GROUP, clusters, healthy, subscribe);
     }
-    
+
+    /**
+     * 服务发现接口
+     */
     @Override
     public List<Instance> selectInstances(String serviceName, String groupName, List<String> clusters, boolean healthy,
             boolean subscribe) throws NacosException {
 
         ServiceInfo serviceInfo;
         String clusterString = StringUtils.join(clusters, ",");
+        // subscribe 默认是true
         if (subscribe) {
+            // serviceInfo 第1次都是null
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo) {
+                // 订阅
                 serviceInfo = clientProxy.subscribe(serviceName, groupName, clusterString);
             }
         } else {
             serviceInfo = clientProxy.queryInstancesOfService(serviceName, groupName, clusterString, 0, false);
         }
+        // 1个服务对应多个实例
         return selectInstances(serviceInfo, healthy);
     }
     

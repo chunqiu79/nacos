@@ -35,11 +35,7 @@ import com.alibaba.nacos.sys.utils.ApplicationUtils;
 import java.util.Optional;
 
 /**
- * Instance beat checker for unhealthy instances.
- *
- * <p>Mark these instances healthy status {@code false} if beat time out.
- *
- * @author xiweng.yy
+ * 不健康实例检查类
  */
 public class UnhealthyInstanceChecker implements InstanceBeatChecker {
     

@@ -55,6 +55,7 @@ public class HealthCheckReactor {
      */
     public static void scheduleCheck(HealthCheckTaskV2 task) {
         task.setStartTime(System.currentTimeMillis());
+        // 注意这里的 task 是 HealthCheckTaskV2
         Runnable wrapperTask = new HealthCheckTaskInterceptWrapper(task);
         GlobalExecutor.scheduleNamingHealth(wrapperTask, task.getCheckRtNormalized(), TimeUnit.MILLISECONDS);
     }

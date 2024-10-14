@@ -176,10 +176,7 @@ public abstract class GrpcClient extends RpcClient {
     }
     
     /**
-     * check server if success.
-     *
-     * @param requestBlockingStub requestBlockingStub used to check server.
-     * @return success or not
+     * 对服务端进行探活
      */
     private Response serverCheck(String ip, int port, RequestGrpc.RequestFutureStub requestBlockingStub) {
         try {
@@ -296,7 +293,7 @@ public abstract class GrpcClient extends RpcClient {
                 // 创建线程池
                 this.grpcExecutor = createGrpcExecutor(serverInfo.getServerIp());
             }
-            // 端口 + 偏移量
+            // 服务端端口 + 偏移量
             int port = serverInfo.getServerPort() + rpcPortOffset();
             // 根据 ip + 端口 创建 grpc channel
             RequestGrpc.RequestFutureStub newChannelStubTemp = createNewChannelStub(serverInfo.getServerIp(), port);
@@ -314,6 +311,7 @@ public abstract class GrpcClient extends RpcClient {
                 grpcConn.setConnectionId(((ServerCheckResponse) response).getConnectionId());
                 
                 //create stream request and bind connection event to this connection.
+                // 发送连接请求
                 StreamObserver<Payload> payloadStreamObserver = bindRequestStream(biRequestStreamStub, grpcConn);
                 
                 // stream observer to send response to server

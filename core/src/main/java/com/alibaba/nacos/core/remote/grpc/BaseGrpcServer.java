@@ -50,10 +50,7 @@ import java.net.InetSocketAddress;
 import java.util.concurrent.ThreadPoolExecutor;
 
 /**
- * Grpc implementation as a rpc server.
- *
- * @author liuzunfei
- * @version $Id: BaseGrpcServer.java, v 0.1 2020年07月13日 3:42 PM liuzunfei Exp $
+ * grpc服务端处理类
  */
 public abstract class BaseGrpcServer extends BaseRpcServer {
     
@@ -96,10 +93,14 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
             public <T, S> ServerCall.Listener<T> interceptCall(ServerCall<T, S> call, Metadata headers,
                     ServerCallHandler<T, S> next) {
                 Context ctx = Context.current()
-                        .withValue(CONTEXT_KEY_CONN_ID, call.getAttributes().get(TRANS_KEY_CONN_ID))
-                        .withValue(CONTEXT_KEY_CONN_REMOTE_IP, call.getAttributes().get(TRANS_KEY_REMOTE_IP))
-                        .withValue(CONTEXT_KEY_CONN_REMOTE_PORT, call.getAttributes().get(TRANS_KEY_REMOTE_PORT))
-                        .withValue(CONTEXT_KEY_CONN_LOCAL_PORT, call.getAttributes().get(TRANS_KEY_LOCAL_PORT));
+                    // 连接id
+                    .withValue(CONTEXT_KEY_CONN_ID, call.getAttributes().get(TRANS_KEY_CONN_ID))
+                    // 远程ip
+                    .withValue(CONTEXT_KEY_CONN_REMOTE_IP, call.getAttributes().get(TRANS_KEY_REMOTE_IP))
+                    // 远程端口
+                    .withValue(CONTEXT_KEY_CONN_REMOTE_PORT, call.getAttributes().get(TRANS_KEY_REMOTE_PORT))
+                    // 本地端口
+                    .withValue(CONTEXT_KEY_CONN_LOCAL_PORT, call.getAttributes().get(TRANS_KEY_LOCAL_PORT));
                 if (REQUEST_BI_STREAM_SERVICE_NAME.equals(call.getMethodDescriptor().getServiceName())) {
                     Channel internalChannel = getInternalChannel(call);
                     ctx = ctx.withValue(CONTEXT_KEY_CHANNEL, internalChannel);
@@ -151,7 +152,7 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                         }
                     }
                 }).build();
-        
+        // 服务端启动
         server.start();
     }
     
@@ -174,11 +175,12 @@ public abstract class BaseGrpcServer extends BaseRpcServer {
                 .setFullMethodName(MethodDescriptor.generateFullMethodName(REQUEST_SERVICE_NAME, REQUEST_METHOD_NAME))
                 .setRequestMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance()))
                 .setResponseMarshaller(ProtoUtils.marshaller(Payload.getDefaultInstance())).build();
-        
+
         final ServerCallHandler<Payload, Payload> payloadHandler = ServerCalls
                 .asyncUnaryCall((request, responseObserver) -> {
                     // 临时实例 客户端和服务端使用 grpc通信 回调这个方法
                     // 临时实例 客户端和服务端建立连接&客户端实例注册 等都会回调这个方法
+                    // 服务端处理客户端请求
                     grpcCommonRequestAcceptor.request(request, responseObserver);
                 });
         

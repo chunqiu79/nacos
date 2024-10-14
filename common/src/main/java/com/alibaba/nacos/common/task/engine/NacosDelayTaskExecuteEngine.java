@@ -62,6 +62,7 @@ public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<
     public NacosDelayTaskExecuteEngine(String name, int initCapacity, Logger logger, long processInterval) {
         super(logger);
         tasks = new ConcurrentHashMap<>(initCapacity);
+        // processingExecutor 用于处理 tasks 的线程池
         processingExecutor = ExecutorFactory.newSingleScheduledExecutorService(new NameThreadFactory(name));
         processingExecutor
                 .scheduleWithFixedDelay(new ProcessRunnable(), processInterval, processInterval, TimeUnit.MILLISECONDS);
@@ -138,6 +139,7 @@ public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<
      * process tasks in execute engine.
      */
     protected void processTasks() {
+        // 获取所有task的key，即所有被订阅的服务
         Collection<Object> keys = getAllTaskKeys();
         for (Object taskKey : keys) {
             AbstractDelayTask task = removeTask(taskKey);
@@ -151,6 +153,7 @@ public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<
             }
             try {
                 // ReAdd task if process failed
+                // 处理task，PushDelayTaskProcessor
                 if (!processor.process(task)) {
                     retryFailedTask(taskKey, task);
                 }
@@ -171,6 +174,7 @@ public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<
         @Override
         public void run() {
             try {
+                // 处理任务
                 processTasks();
             } catch (Throwable e) {
                 getEngineLog().error(e.toString(), e);

@@ -52,6 +52,7 @@ public class DistroDataRequestHandler extends RequestHandler<DistroDataRequest, 
                 case SNAPSHOT:
                     return handleSnapshot();
                 case ADD:
+                    // 服务注册
                 case CHANGE:
                 case DELETE:
                     return handleSyncData(request.getDistroData());
