@@ -30,6 +30,8 @@ import org.springframework.stereotype.Component;
 
 /**
  * 临时实例：服务注册发送的Request就是 InstanceRequest
+ * 其实一般 都是临时实例，很少用永久实例，默认也是临时实例
+ * 临时实例 使用的是 grpc，grpc底层用了 netty
  */
 @Component
 public class InstanceRequestHandler extends RequestHandler<InstanceRequest, InstanceResponse> {
@@ -43,7 +45,7 @@ public class InstanceRequestHandler extends RequestHandler<InstanceRequest, Inst
     @Override
     @Secured(action = ActionTypes.WRITE)
     public InstanceResponse handle(InstanceRequest request, RequestMeta meta) throws NacosException {
-        // 这里的 service 其实就是客户端的信息
+        // 这里的 service 其实就是 客户端的信息，简单包装了一下
         Service service = Service
                 .newService(request.getNamespace(), request.getGroupName(), request.getServiceName(), true);
         switch (request.getType()) {

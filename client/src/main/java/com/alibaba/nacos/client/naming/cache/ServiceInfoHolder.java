@@ -60,7 +60,8 @@ public class ServiceInfoHolder implements Closeable {
 
     /**
      * 客户端订阅的信息
-     * key-服务名  value-服务信息
+     * key-服务的唯一标识，类似服务名
+     * value-服务信息
      */
     private final ConcurrentMap<String, ServiceInfo> serviceInfoMap;
     

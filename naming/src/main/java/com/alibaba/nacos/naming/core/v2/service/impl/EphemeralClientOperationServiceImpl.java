@@ -63,7 +63,6 @@ public class EphemeralClientOperationServiceImpl implements ClientOperationServi
             return;
         }
         InstancePublishInfo instanceInfo = getPublishInfo(instance);
-        // 1个client对应1个服务的具体实例
         client.addServiceInstance(singleton, instanceInfo);
         client.setLastUpdatedTime();
         // 发布客户端注册事件

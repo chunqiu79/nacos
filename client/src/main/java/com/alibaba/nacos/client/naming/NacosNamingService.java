@@ -230,13 +230,18 @@ public class NacosNamingService implements NamingService {
             throws NacosException {
         return getAllInstances(serviceName, Constants.DEFAULT_GROUP, clusters, subscribe);
     }
-    
+
+    /**
+     * 服务发现
+     */
     @Override
     public List<Instance> getAllInstances(String serviceName, String groupName, List<String> clusters,
             boolean subscribe) throws NacosException {
         ServiceInfo serviceInfo;
         String clusterString = StringUtils.join(clusters, ",");
+        // subscribe 默认是 true
         if (subscribe) {
+            // 第1次获取的 肯定是 null，本地缓存没有对应的服务信息
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo || !clientProxy.isSubscribed(serviceName, groupName, clusterString)) {
                 serviceInfo = clientProxy.subscribe(serviceName, groupName, clusterString);
@@ -255,7 +260,11 @@ public class NacosNamingService implements NamingService {
     public List<Instance> selectInstances(String serviceName, boolean healthy) throws NacosException {
         return selectInstances(serviceName, new ArrayList<>(), healthy);
     }
-    
+
+    /**
+     * spring-cloud-starter-alibaba-nacos-discovery 底层调用的就是这个接口方法
+     * 服务发现接口
+     */
     @Override
     public List<Instance> selectInstances(String serviceName, String groupName, boolean healthy) throws NacosException {
         return selectInstances(serviceName, groupName, healthy, true);
@@ -300,9 +309,9 @@ public class NacosNamingService implements NamingService {
 
         ServiceInfo serviceInfo;
         String clusterString = StringUtils.join(clusters, ",");
-        // subscribe 默认是true
+        // subscribe 默认是 true
         if (subscribe) {
-            // serviceInfo 第1次都是null
+            // 第1次获取的 肯定是 null，本地缓存没有对应的服务信息
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo) {
                 // 订阅

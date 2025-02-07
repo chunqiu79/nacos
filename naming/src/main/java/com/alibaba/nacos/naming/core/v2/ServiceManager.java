@@ -51,14 +51,22 @@ public class ServiceManager {
     }
     
     /**
-     * Get singleton service. Put to manager if no singleton.
-     *
-     * @param service new service
-     * @return if service is exist, return exist service, otherwise return new service
+     * 如果 service 已经存在了，则返回存在的 service，否则返回新的 service，即当前传入的 service
+     * tips - service 的 equals方法被重写了
      */
     public Service getSingleton(Service service) {
+        /*
+         * 这2行代码初看感觉有毒
+         * 实际上第1代码就是如果 当前 service 没有存在 singletonRepository 中，则put
+         * get 分情况
+         * 1.原先不存在，则获取的就是当前传入的 service
+         * 2.原先存在，则获取的就是原先的 service ，因为 putIfAbsent
+         * 所以，很显然，这个 service 的 equals 被重写了
+         */
         singletonRepository.putIfAbsent(service, service);
         Service result = singletonRepository.get(service);
+
+
         namespaceSingletonMaps.computeIfAbsent(result.getNamespace(), (namespace) -> new ConcurrentHashSet<>());
         namespaceSingletonMaps.get(result.getNamespace()).add(result);
         return result;

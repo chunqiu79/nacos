@@ -29,6 +29,10 @@ import java.util.Collection;
  * services the client has published and subscribed.
  *
  * @author xiweng.yy
+ *
+ * gprc 的 客户端和服务端建立连接， 服务端 给 客户端信息 封装到 Client 中
+ * 1 个连接 就会 有 1个 客户端，服务端 就会给客户端 创建 1个新的 Client 对象
+ *
  */
 public interface Client {
     

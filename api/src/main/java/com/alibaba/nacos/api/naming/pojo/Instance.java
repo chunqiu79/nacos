@@ -29,9 +29,7 @@ import java.util.Map;
 import static com.alibaba.nacos.api.common.Constants.NUMBER_PATTERN;
 
 /**
- * Instance.
- *
- * @author nkorange
+ * 实例信息
  */
 @JsonInclude(Include.NON_NULL)
 public class Instance implements Serializable {

@@ -44,7 +44,7 @@ import java.util.concurrent.ConcurrentMap;
 public class ClientServiceIndexesManager extends SmartSubscriber {
 
     /**
-     * 注册表
+     * 这个 就是 真正的服务注册表
      * key-服务   value-注册服务的实例id列表
      */
     private final ConcurrentMap<Service, Set<String>> publisherIndexes = new ConcurrentHashMap<>();

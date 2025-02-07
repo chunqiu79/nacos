@@ -74,10 +74,7 @@ public interface ClientOperationService {
     }
     
     /**
-     * get publish info.
-     *
-     * @param instance {@link Instance}
-     * @return {@link InstancePublishInfo}
+     * 这里就相当于 converter，把 Instance 对象转换成 InstancePublishInfo 对象
      */
     default InstancePublishInfo getPublishInfo(Instance instance) {
         InstancePublishInfo result = new InstancePublishInfo(instance.getIp(), instance.getPort());

@@ -47,7 +47,12 @@ import java.util.concurrent.TimeUnit;
  */
 @Component("ephemeralIpPortClientManager")
 public class EphemeralIpPortClientManager implements ClientManager {
-    
+
+    /**
+     * 客户端信息 map
+     * key - 连接id，就是 客户端和服务端建立的1个唯一标识的id，connectId
+     * value - Client 对象，服务端专门用来保存客户端信息的对象
+     */
     private final ConcurrentMap<String, IpPortBasedClient> clients = new ConcurrentHashMap<>();
     
     private final DistroMapper distroMapper;

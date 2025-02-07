@@ -23,9 +23,7 @@ import java.util.Objects;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
- * Service POJO for Nacos v2.
- *
- * @author xiweng.yy
+ * 服务信息
  */
 public class Service implements Serializable {
     

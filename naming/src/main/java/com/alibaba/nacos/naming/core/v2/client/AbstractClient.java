@@ -65,6 +65,9 @@ public abstract class AbstractClient implements Client {
     
     @Override
     public boolean addServiceInstance(Service service, InstancePublishInfo instancePublishInfo) {
+        /*
+         * 为啥1个 service 只对应1个 instance？
+         */
         if (null == publishers.put(service, instancePublishInfo)) {
             MetricsMonitor.incrementInstanceCount();
         }
