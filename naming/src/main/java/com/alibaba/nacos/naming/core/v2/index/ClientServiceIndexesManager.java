@@ -45,13 +45,19 @@ public class ClientServiceIndexesManager extends SmartSubscriber {
 
     /**
      * 这个 就是 真正的服务注册表
-     * key-服务   value-注册服务的实例id列表
+     * key-服务
+     * value-注册服务的实例id列表
+     * 例子：order-service1、order-service2
+     * 那么 publisherIndexes key就是 order-service，value就是 order-service1、order-service2各自的clientId（连接标识）
      */
     private final ConcurrentMap<Service, Set<String>> publisherIndexes = new ConcurrentHashMap<>();
 
     /**
      * 订阅表
-     * key-服务    value-订阅服务的实例id列表
+     * key-被订阅的服务
+     * value-订阅服务的实例id列表
+     * 例子：order-service 需要查询 stock-service
+     * 那么 subscriberIndexes key就是 stock-service，value就是 order-service具体的实例的clientId（连接标识）
      */
     private final ConcurrentMap<Service, Set<String>> subscriberIndexes = new ConcurrentHashMap<>();
     

@@ -315,6 +315,7 @@ public class NacosNamingService implements NamingService {
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo) {
                 // 订阅
+                // 这里的 clientProxy 是 NamingClientProxyDelegate
                 serviceInfo = clientProxy.subscribe(serviceName, groupName, clusterString);
             }
         } else {

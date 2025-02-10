@@ -61,9 +61,16 @@ public class SubscribeServiceRequestHandler extends RequestHandler<SubscribeServ
         String groupName = request.getGroupName();
         String app = request.getHeader("app", "unknown");
         String groupedServiceName = NamingUtils.getGroupedName(serviceName, groupName);
+        /*
+         * 例子：order-service 想要调用 stock-service 服务
+         * 那么 order-service 就是 subscriber，stock-service 就是 service
+         */
+        // 客户端想要获取的服务信息
         Service service = Service.newService(namespaceId, groupName, serviceName, true);
+        // 客户端信息的封装
         Subscriber subscriber = new Subscriber(meta.getClientIp(), meta.getClientVersion(), app, meta.getClientIp(),
                 namespaceId, groupedServiceName, 0, request.getClusters());
+        // 这里 获取 service信息
         ServiceInfo serviceInfo = ServiceUtil.selectInstancesWithHealthyProtection(serviceStorage.getData(service),
                 metadataManager.getServiceMetadata(service).orElse(null), subscriber);
         if (request.isSubscribe()) {

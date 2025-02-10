@@ -103,7 +103,9 @@ public class ServiceStorage {
     private List<Instance> getAllInstancesFromIndex(Service service) {
         Set<Instance> result = new HashSet<>();
         Set<String> clusters = new HashSet<>();
+        // 就是从 publisherIndexes注册表 中通过服务名获取对应的所有的实例id
         for (String each : serviceIndexesManager.getAllClientsRegisteredService(service)) {
+            // 这个 each 就是 客户端id
             Optional<InstancePublishInfo> instancePublishInfo = getInstanceInfo(each, service);
             if (instancePublishInfo.isPresent()) {
                 Instance instance = parseInstance(service, instancePublishInfo.get());

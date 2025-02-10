@@ -49,7 +49,7 @@ import java.util.concurrent.TimeUnit;
 public class EphemeralIpPortClientManager implements ClientManager {
 
     /**
-     * 客户端信息 map
+     * 所有客户端信息 map
      * key - 连接id，就是 客户端和服务端建立的1个唯一标识的id，connectId
      * value - Client 对象，服务端专门用来保存客户端信息的对象
      */

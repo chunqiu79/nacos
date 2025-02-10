@@ -31,19 +31,19 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
- * Abstract implementation of {@code Client}.
- *
- * @author xiweng.yy
+ * 每个客户端连接都是 1个新的 client
  */
 public abstract class AbstractClient implements Client {
 
     /**
-     *
+     * key-服务信息
+     * value-实例信息
      */
     protected final ConcurrentHashMap<Service, InstancePublishInfo> publishers = new ConcurrentHashMap<>(16, 0.75f, 1);
 
     /**
-     *
+     * key-被订阅者服务
+     * value-订阅的服务者
      */
     protected final ConcurrentHashMap<Service, Subscriber> subscribers = new ConcurrentHashMap<>(16, 0.75f, 1);
     
