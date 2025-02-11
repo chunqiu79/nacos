@@ -102,7 +102,11 @@ public class PushDelayTaskExecuteEngine extends NacosDelayTaskExecuteEngine {
         public boolean process(NacosTask task) {
             PushDelayTask pushDelayTask = (PushDelayTask) task;
             Service service = pushDelayTask.getService();
-            // 处理真正的任务
+            /*
+             * 处理真正的任务，可能是
+             * 1. 服务变更
+             * 2. 服务被订阅
+             */
             NamingExecuteTaskDispatcher.getInstance()
                     .dispatchAndExecuteTask(service, new PushExecuteTask(service, executeEngine, pushDelayTask));
             return true;

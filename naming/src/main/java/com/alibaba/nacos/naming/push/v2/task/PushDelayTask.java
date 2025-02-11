@@ -49,7 +49,7 @@ public class PushDelayTask extends AbstractDelayTask {
     }
 
     /**
-     * 订阅推送的任务
+     * 服务被订阅推送的任务
      * 指定了实例id
      */
     public PushDelayTask(Service service, long delay, String targetClient) {
@@ -80,9 +80,13 @@ public class PushDelayTask extends AbstractDelayTask {
     public Service getService() {
         return service;
     }
-    
+
+    /**
+     * 服务变更事件 就是 true
+     * 服务被订阅事件 就是 false
+     */
     public boolean isPushToAll() {
-        // true-指定了客户端实例id（订阅）     false-没有指定客户端实例id（变更）
+        // true-没有指定客户端实例id（变更）     false-指定了客户端实例id（订阅）
         return pushToAll;
     }
     

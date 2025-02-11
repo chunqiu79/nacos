@@ -38,7 +38,10 @@ import java.util.concurrent.locks.ReentrantLock;
 public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<AbstractDelayTask> {
     
     private final ScheduledExecutorService processingExecutor;
-    
+
+    /**
+     * key-被订阅的服务
+     */
     protected final ConcurrentHashMap<Object, AbstractDelayTask> tasks;
     
     protected final ReentrantLock lock = new ReentrantLock();
@@ -87,7 +90,10 @@ public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<
             lock.unlock();
         }
     }
-    
+
+    /**
+     * 只有这个方法会从tasks中获取task
+     */
     @Override
     public AbstractDelayTask removeTask(Object key) {
         lock.lock();
@@ -136,7 +142,7 @@ public class NacosDelayTaskExecuteEngine extends AbstractNacosTaskExecuteEngine<
     }
     
     /**
-     * process tasks in execute engine.
+     * 处理 tasks任务的
      */
     protected void processTasks() {
         // 获取所有task的key，即所有被订阅的服务

@@ -52,13 +52,21 @@ public class PushExecuteTask extends AbstractExecuteTask {
         this.delayTaskEngine = delayTaskEngine;
         this.delayTask = delayTask;
     }
-    
+
+    /**
+     * 有2种可能
+     * 1. 服务变更，需要推送到所有订阅这个服务的客户端
+     * 2. 服务被订阅， 需要推送到当前订阅这个服务的客户端（指定了客户端id）
+     */
     @Override
     public void run() {
         try {
             PushDataWrapper wrapper = generatePushData();
             ClientManager clientManager = delayTaskEngine.getClientManager();
-            // 获取订阅这个服务的所有实例id
+            /*
+             * 两种可能
+             * 1. 获取订阅这个服务的所有实例id
+             */
             for (String each : getTargetClientIds()) {
                 Client client = clientManager.getClient(each);
                 if (null == client) {
@@ -81,7 +89,12 @@ public class PushExecuteTask extends AbstractExecuteTask {
         ServiceMetadata serviceMetadata = delayTaskEngine.getMetadataManager().getServiceMetadata(service).orElse(null);
         return new PushDataWrapper(serviceMetadata, serviceInfo);
     }
-    
+
+    /**
+     * delayTask.isPushToAll()
+     * true - 返回 所有订阅服务的客户端id
+     * false -
+     */
     private Collection<String> getTargetClientIds() {
         return delayTask.isPushToAll() ? delayTaskEngine.getIndexesManager().getAllClientsSubscribeService(service)
                 : delayTask.getTargetClients();

@@ -144,6 +144,10 @@ public class ClientServiceIndexesManager extends SmartSubscriber {
         // 将实例信息添加到服务信息上，一个服务可以包含多个实例
         publisherIndexes.computeIfAbsent(service, (key) -> new ConcurrentHashSet<>());
         publisherIndexes.get(service).add(clientId);
+        /*
+         * 发布服务变更事件
+         * 为了通知 服务对应的订阅者 更新服务信息
+         */
         NotifyCenter.publishEvent(new ServiceEvent.ServiceChangedEvent(service, true));
     }
     

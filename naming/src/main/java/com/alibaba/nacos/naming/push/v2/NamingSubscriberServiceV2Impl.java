@@ -121,18 +121,27 @@ public class NamingSubscriberServiceV2Impl extends SmartSubscriber implements Na
             return;
         }
         if (event instanceof ServiceEvent.ServiceChangedEvent) {
-            // 服务变更事件
+            /*
+             * 服务变更事件
+             * 显然 应该从 订阅表 中获取当前变更服务所有的订阅者的clientId
+             * 然后通过clientId找到对应的grpc连接，逐个推送 变更服务的信息
+             */
             // If service changed, push to all subscribers.
             ServiceEvent.ServiceChangedEvent serviceChangedEvent = (ServiceEvent.ServiceChangedEvent) event;
             Service service = serviceChangedEvent.getService();
-            // 添加任务是，全部推送
+            /*
+             * 添加任务是，全部推送
+             * tips: 这里添加的是 PushDelayTask
+             */
             delayTaskEngine.addTask(service, new PushDelayTask(service, PushConfig.getInstance().getPushTaskDelay()));
         } else if (event instanceof ServiceEvent.ServiceSubscribedEvent) {
             // 服务被订阅事件
-            // If service is subscribed by one client, only push this client.
             ServiceEvent.ServiceSubscribedEvent subscribedEvent = (ServiceEvent.ServiceSubscribedEvent) event;
             Service service = subscribedEvent.getService();
-            // 添加任务，推送给指定的订阅的客户端
+            /*
+             * 添加任务，推送给指定的订阅的客户端
+             * tips: 这里添加的是 PushDelayTask
+             */
             delayTaskEngine.addTask(service, new PushDelayTask(service, PushConfig.getInstance().getPushTaskDelay(),
                     subscribedEvent.getClientId()));
         }
