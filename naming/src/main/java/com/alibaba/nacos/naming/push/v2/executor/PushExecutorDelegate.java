@@ -59,6 +59,9 @@ public class PushExecutorDelegate implements PushExecutor {
             return result.get();
         }
         // use nacos default push executor
+        /*
+         * clientId 中包含"#"，就使用udp，否则使用rpc
+         */
         return clientId.contains(IpPortBasedClient.ID_DELIMITER) ? udpPushExecuteService : rpcPushExecuteService;
     }
 }

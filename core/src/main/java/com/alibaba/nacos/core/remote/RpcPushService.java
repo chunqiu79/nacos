@@ -52,7 +52,10 @@ public class RpcPushService {
         Connection connection = connectionManager.getConnection(connectionId);
         if (connection != null) {
             try {
-                // 异步
+                /*
+                 * 异步
+                 * 处理这个请求：ServerRequestHandler
+                 */
                 connection.asyncRequest(request, new AbstractRequestCallBack(requestCallBack.getTimeout()) {
                     
                     @Override

@@ -285,6 +285,7 @@ public class ConnectionManager extends Subscriber<ConnectionLimitRuleChangeEvent
     }
     
     /**
+     * 客户端健康检查
      * 启动任务：驱逐活动时间过期的连接
      */
     @PostConstruct
@@ -409,6 +410,9 @@ public class ConnectionManager extends Subscriber<ConnectionLimitRuleChangeEvent
                     }
                 }
 
+                /*
+                 * 客户端存活检测
+                 */
                 //4.client active detection.
                 Loggers.REMOTE_DIGEST.info("Out dated connection ,size={}", outDatedConnections.size());
                 if (CollectionUtils.isNotEmpty(outDatedConnections)) {

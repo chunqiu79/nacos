@@ -74,7 +74,10 @@ public class PushExecuteTask extends AbstractExecuteTask {
                     continue;
                 }
                 Subscriber subscriber = clientManager.getClient(each).getSubscriber(service);
-                // 处理任务
+                /*
+                 * 处理任务
+                 * delayTaskEngine.getPushExecutor() 是 PushExecutorDelegate
+                 */
                 delayTaskEngine.getPushExecutor().doPushWithCallback(each, subscriber, wrapper,
                         new NamingPushCallback(each, subscriber, wrapper.getOriginalData(), delayTask.isPushToAll()));
             }
