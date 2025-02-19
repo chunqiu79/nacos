@@ -298,13 +298,13 @@ public abstract class GrpcClient extends RpcClient {
             // 根据 ip + 端口 创建 grpc channel
             RequestGrpc.RequestFutureStub newChannelStubTemp = createNewChannelStub(serverInfo.getServerIp(), port);
             if (newChannelStubTemp != null) {
-                
+                // 相当于对 服务端进行 探活
                 Response response = serverCheck(serverInfo.getServerIp(), port, newChannelStubTemp);
                 if (response == null || !(response instanceof ServerCheckResponse)) {
                     shuntDownChannel((ManagedChannel) newChannelStubTemp.getChannel());
                     return null;
                 }
-                
+                // 后面其实不太需要关注了，属于grpc的内容
                 BiRequestStreamGrpc.BiRequestStreamStub biRequestStreamStub = BiRequestStreamGrpc
                         .newStub(newChannelStubTemp.getChannel());
                 GrpcConnection grpcConn = new GrpcConnection(serverInfo, grpcExecutor);

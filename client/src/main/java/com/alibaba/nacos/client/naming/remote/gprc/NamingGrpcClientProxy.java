@@ -83,13 +83,18 @@ public class NamingGrpcClientProxy extends AbstractNamingClientProxy {
         labels.put(RemoteConstants.LABEL_MODULE, RemoteConstants.LABEL_MODULE_NAMING);
         this.rpcClient = RpcClientFactory.createClient(uuid, ConnectionType.GRPC, labels);
         this.redoService = new NamingGrpcRedoService(this);
-        // 其实这个里面会对 rpc 的 currentConnection 赋值
+        /*
+         * 其实这个里面会对 rpc 的 currentConnection 赋值
+         */
         start(serverListFactory, serviceInfoHolder);
     }
     
     private void start(ServerListFactory serverListFactory, ServiceInfoHolder serviceInfoHolder) throws NacosException {
         rpcClient.serverListFactory(serverListFactory);
         rpcClient.registerConnectionListener(redoService);
+        /*
+         * 这里就会注册1个 客户端针对服务端请求 的处理类
+         */
         rpcClient.registerServerRequestHandler(new NamingPushRequestHandler(serviceInfoHolder));
         // rpc start
         rpcClient.start();
