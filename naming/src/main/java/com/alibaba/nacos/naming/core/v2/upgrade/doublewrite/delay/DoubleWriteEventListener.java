@@ -60,7 +60,10 @@ public class DoubleWriteEventListener extends Subscriber<ServiceEvent.ServiceCha
             doubleWriteEnabledChecker.start();
         }
     }
-    
+
+    /**
+     * 监听-服务变更事件
+     */
     @Override
     public void onEvent(ServiceEvent.ServiceChangedEvent event) {
         if (stopDoubleWrite) {

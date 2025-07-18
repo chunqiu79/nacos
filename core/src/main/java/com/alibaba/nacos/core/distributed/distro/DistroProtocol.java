@@ -105,6 +105,7 @@ public class DistroProtocol {
     }
     
     /**
+     * 集群节点同步
      * Start to sync data to all remote server.
      *
      * @param distroKey distro key of sync data

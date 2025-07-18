@@ -59,10 +59,16 @@ public class Cluster extends com.alibaba.nacos.api.naming.pojo.Cluster implement
     
     @JsonIgnore
     private HealthCheckTask checkTask;
-    
+
+    /**
+     * 当前集群的永久实例信息
+     */
     @JsonIgnore
     private Set<Instance> persistentInstances = new HashSet<>();
-    
+
+    /**
+     * 当前集群的临时实例信息
+     */
     @JsonIgnore
     private Set<Instance> ephemeralInstances = new HashSet<>();
     
@@ -294,7 +300,7 @@ public class Cluster extends com.alibaba.nacos.api.naming.pojo.Cluster implement
         }
         
         toUpdateInstances = new HashSet<>(ips);
-        
+        // 对服务实例信息重新赋值
         if (ephemeral) {
             ephemeralInstances = toUpdateInstances;
         } else {

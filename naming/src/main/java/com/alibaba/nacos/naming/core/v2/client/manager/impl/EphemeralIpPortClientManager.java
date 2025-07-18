@@ -41,9 +41,7 @@ import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.TimeUnit;
 
 /**
- * The manager of {@code IpPortBasedClient} and ephemeral.
- *
- * @author xiweng.yy
+ * 临时实例客户端管理器
  */
 @Component("ephemeralIpPortClientManager")
 public class EphemeralIpPortClientManager implements ClientManager {

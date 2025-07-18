@@ -33,10 +33,10 @@ public class Nacos {
         // 单机模式
         System.setProperty("nacos.standalone", "true");
         // 需要指定 nacos.home 目录
-        System.setProperty("nacos.home", "D:\\idea\\project\\framework-study\\nacos\\logs");
-
+        System.setProperty("nacos.home", "/Users/chunqiu79/java/idea/projects/nacos/data");
+        // 指定 nacos.logs.path 目录
+        System.setProperty("nacos.logs.path", "/Users/chunqiu79/java/idea/projects/nacos/data/logs");
         // 可选
-
         SpringApplication.run(Nacos.class, args);
     }
 }

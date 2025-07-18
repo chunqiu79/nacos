@@ -99,6 +99,9 @@ public class NamingClientProxyDelegate implements NamingClientProxy {
     
     @Override
     public void deregisterService(String serviceName, String groupName, Instance instance) throws NacosException {
+        /*
+         * 默认是临时的，临时的就使用 gprc 的实现，永久的就是使用 http 的实现
+         */
         getExecuteClientProxy(instance).deregisterService(serviceName, groupName, instance);
     }
     
@@ -144,14 +147,17 @@ public class NamingClientProxyDelegate implements NamingClientProxy {
         NAMING_LOGGER.info("[SUBSCRIBE-SERVICE] service:{}, group:{}, clusters:{} ", serviceName, groupName, clusters);
         String serviceNameWithGroup = NamingUtils.getGroupedName(serviceName, groupName);
         String serviceKey = ServiceInfo.getKey(serviceNameWithGroup, clusters);
-        // 创建定时任务，这个定时任务目的就是为了 客户端 自动更新（被订阅的）服务名字对应的服务信息
+        /*
+         * 创建定时任务
+         * 这个定时任务目的就是为了 客户端 自动更新（当前客户端订阅的）服务名字对应的服务信息
+         */
         serviceInfoUpdateService.scheduleUpdateIfAbsent(serviceName, groupName, clusters);
         ServiceInfo result = serviceInfoHolder.getServiceInfoMap().get(serviceKey);
         if (null == result || !isSubscribed(serviceName, groupName, clusters)) {
             // 不存在，发送 grpc 请求获取
             result = grpcClientProxy.subscribe(serviceName, groupName, clusters);
         }
-        // 更新缓存
+        // 更新本地缓存
         serviceInfoHolder.processServiceInfo(result);
         return result;
     }

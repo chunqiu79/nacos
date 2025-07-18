@@ -35,7 +35,7 @@ import com.alibaba.nacos.plugin.auth.constant.ActionTypes;
 import org.springframework.stereotype.Component;
 
 /**
- * 客户端订阅服务处理类
+ * 客户端订阅服务的处理类
  */
 @Component
 public class SubscribeServiceRequestHandler extends RequestHandler<SubscribeServiceRequest, SubscribeServiceResponse> {

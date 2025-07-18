@@ -78,6 +78,7 @@ public class ClientBeatProcessor implements BeatProcessor {
                 if (Loggers.EVT_LOG.isDebugEnabled()) {
                     Loggers.EVT_LOG.debug("[CLIENT-BEAT] refresh beat: {}", rsInfo.toString());
                 }
+                // 修改实例最后心跳时间
                 instance.setLastBeat(System.currentTimeMillis());
                 if (!instance.isMarked() && !instance.isHealthy()) {
                     instance.setHealthy(true);
@@ -85,6 +86,7 @@ public class ClientBeatProcessor implements BeatProcessor {
                             .info("service: {} {POS} {IP-ENABLED} valid: {}:{}@{}, region: {}, msg: client beat ok",
                                     cluster.getService().getName(), ip, port, cluster.getName(),
                                     UtilsAndCommons.LOCALHOST_SITE);
+                    // 发送服务变更事件
                     getPushService().serviceChanged(service);
                 }
             }

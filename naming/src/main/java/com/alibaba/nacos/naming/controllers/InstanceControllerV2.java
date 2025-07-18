@@ -386,16 +386,8 @@ public class InstanceControllerV2 {
     }
     
     /**
-     * Create a beat for instance.
-     *
-     * @param namespaceId service namespaceId
-     * @param serviceName service serviceName
-     * @param ip          instance ip
-     * @param clusterName service clusterName
-     * @param port        instance port
-     * @param beat        instance beat info
-     * @return detail information of instance
-     * @throws Exception any error during handle
+     * uri:/nacos/v2/ns/beat    put请求
+     * 2.0版本-客户端向服务端发送的心跳请求，当前是服务端接受到该请求
      */
     @CanDistro
     @PutMapping("/beat")
@@ -427,6 +419,7 @@ public class InstanceControllerV2 {
         Loggers.SRV_LOG.debug("[CLIENT-BEAT] full arguments: beat: {}, serviceName: {}, namespaceId: {}", clientBeat,
                 serviceName, namespaceId);
         BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
+        // 处理心跳请求
         int resultCode = instanceServiceV2
                 .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
         result.put(CommonParams.CODE, resultCode);

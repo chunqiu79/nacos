@@ -39,6 +39,7 @@ public class ServiceEvent extends Event {
     }
     
     /**
+     * 服务变更事件
      * Service data changed event.
      */
     public static class ServiceChangedEvent extends ServiceEvent {

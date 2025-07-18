@@ -166,7 +166,10 @@ public class NamingHttpClientProxy extends AbstractNamingClientProxy {
         // uri : /nacos/v1/ns/instance
         reqApi(UtilAndComs.nacosUrlInstance, params, HttpMethod.POST);
     }
-    
+
+    /**
+     * 永久实例-注销
+     */
     @Override
     public void deregisterService(String serviceName, String groupName, Instance instance) throws NacosException {
         NAMING_LOGGER
@@ -306,6 +309,7 @@ public class NamingHttpClientProxy extends AbstractNamingClientProxy {
         params.put(CommonParams.CLUSTER_NAME, beatInfo.getCluster());
         params.put(IP_PARAM, beatInfo.getIp());
         params.put(PORT_PARAM, String.valueOf(beatInfo.getPort()));
+        // /nacos/v1/ns/instance/beat
         String result = reqApi(UtilAndComs.nacosUrlBase + "/instance/beat", params, bodyMap, HttpMethod.PUT);
         return JacksonUtils.toObj(result);
     }

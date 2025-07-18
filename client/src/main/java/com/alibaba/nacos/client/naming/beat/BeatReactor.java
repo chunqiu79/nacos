@@ -70,6 +70,7 @@ public class BeatReactor implements Closeable {
             @Override
             public Thread newThread(Runnable r) {
                 Thread thread = new Thread(r);
+                // 设置为守护线程
                 thread.setDaemon(true);
                 thread.setName("com.alibaba.nacos.naming.beat.sender");
                 return thread;
@@ -179,6 +180,7 @@ public class BeatReactor implements Closeable {
             }
             long nextTime = beatInfo.getPeriod();
             try {
+                // 发送心跳
                 JsonNode result = serverProxy.sendBeat(beatInfo, BeatReactor.this.lightBeatEnabled);
                 long interval = result.get(CLIENT_BEAT_INTERVAL_FIELD).asLong();
                 boolean lightBeatEnabled = false;
@@ -193,6 +195,7 @@ public class BeatReactor implements Closeable {
                 if (result.has(CommonParams.CODE)) {
                     code = result.get(CommonParams.CODE).asInt();
                 }
+                // nacos服务端没有当前实例信息
                 if (code == NamingResponseCode.RESOURCE_NOT_FOUND) {
                     Instance instance = new Instance();
                     instance.setPort(beatInfo.getPort());
@@ -218,6 +221,7 @@ public class BeatReactor implements Closeable {
                         JacksonUtils.toJson(beatInfo), unknownEx.getMessage(), unknownEx);
             } finally {
                 // 再次创建任务，如此反复循环
+                // todo chunqiu79 2025/7/14 这里为啥不是创建的时候直接使用 scheduleWithFixedDelay ？
                 executorService.schedule(new BeatTask(beatInfo), nextTime, TimeUnit.MILLISECONDS);
             }
         }

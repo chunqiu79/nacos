@@ -113,7 +113,10 @@ public class UdpPushService implements ApplicationContextAware, ApplicationListe
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.applicationContext = applicationContext;
     }
-    
+
+    /**
+     * 监听服务变更事件
+     */
     @Override
     public void onApplicationEvent(ServiceChangeEvent event) {
         // If upgrade to 2.0.X, do not push for v1.
@@ -130,6 +133,7 @@ public class UdpPushService implements ApplicationContextAware, ApplicationListe
         Future future = GlobalExecutor.scheduleUdpSender(() -> {
             try {
                 Loggers.PUSH.info(serviceName + " is changed, add it to push queue.");
+
                 ConcurrentMap<String, PushClient> clients = subscriberServiceV1.getClientMap()
                         .get(UtilsAndCommons.assembleFullServiceName(namespaceId, serviceName));
                 if (MapUtils.isEmpty(clients)) {

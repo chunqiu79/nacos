@@ -97,6 +97,7 @@ public class NacosNamingService implements NamingService {
         NotifyCenter.registerToPublisher(InstancesChangeEvent.class, 16384);
         NotifyCenter.registerSubscriber(changeNotifier);
         this.serviceInfoHolder = new ServiceInfoHolder(namespace, properties);
+        // 代理
         this.clientProxy = new NamingClientProxyDelegate(this.namespace, serviceInfoHolder, properties, changeNotifier);
     }
     
@@ -172,7 +173,11 @@ public class NacosNamingService implements NamingService {
     public void deregisterInstance(String serviceName, String ip, int port, String clusterName) throws NacosException {
         deregisterInstance(serviceName, Constants.DEFAULT_GROUP, ip, port, clusterName);
     }
-    
+
+    /**
+     * spring-cloud-starter-alibaba-nacos-discovery 底层调用的就是这个接口方法
+     * 服务下线（其实是服务的实例下线）接口
+     */
     @Override
     public void deregisterInstance(String serviceName, String groupName, String ip, int port, String clusterName)
             throws NacosException {
@@ -180,6 +185,7 @@ public class NacosNamingService implements NamingService {
         instance.setIp(ip);
         instance.setPort(port);
         instance.setClusterName(clusterName);
+        // 注销实例
         deregisterInstance(serviceName, groupName, instance);
     }
     
@@ -190,6 +196,9 @@ public class NacosNamingService implements NamingService {
     
     @Override
     public void deregisterInstance(String serviceName, String groupName, Instance instance) throws NacosException {
+        /*
+         * 当前直接跳转到 NamingClientProxyDelegate
+         */
         clientProxy.deregisterService(serviceName, groupName, instance);
     }
     
@@ -311,11 +320,17 @@ public class NacosNamingService implements NamingService {
         String clusterString = StringUtils.join(clusters, ",");
         // subscribe 默认是 true
         if (subscribe) {
-            // 第1次获取的 肯定是 null，本地缓存没有对应的服务信息
+            /*
+             * 查询客户端本地缓存
+             * 第1次获取的 肯定是 null，本地缓存没有对应的服务信息
+             * 当然这并不意味着非第1次获取就不会是null，有可能刚好本地缓存中没有 serviceName 信息
+             */
             serviceInfo = serviceInfoHolder.getServiceInfo(serviceName, groupName, clusterString);
             if (null == serviceInfo) {
-                // 订阅
-                // 这里的 clientProxy 是 NamingClientProxyDelegate
+                /*
+                 * 订阅
+                 * 这里的 clientProxy 是 NamingClientProxyDelegate
+                 */
                 serviceInfo = clientProxy.subscribe(serviceName, groupName, clusterString);
             }
         } else {

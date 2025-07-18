@@ -94,18 +94,19 @@ public class InstanceController {
 
     /**
      * uri：/nacos/v1/ns/instance
-     * 注册实例 的 rest请求
+     * 注册实例 的 post请求
      */
     @CanDistro
     @PostMapping
     @Secured(action = ActionTypes.WRITE)
     public String register(HttpServletRequest request) throws Exception {
+        // 从request中获取 namespaceId
         final String namespaceId = WebUtils
                 .optional(request, CommonParams.NAMESPACE_ID, Constants.DEFAULT_NAMESPACE_ID);
-        // 这里的serviceName = groupName + "@@" + serviceName
+        // 从request中获取 serviceName （这里的serviceName = groupName + "@@" + serviceName）
         final String serviceName = WebUtils.required(request, CommonParams.SERVICE_NAME);
         NamingUtils.checkServiceNameFormat(serviceName);
-        
+        // 从request中获取 instance
         final Instance instance = HttpRequestInstanceBuilder.newBuilder()
                 .setDefaultInstanceEphemeral(switchDomain.isDefaultInstanceEphemeral()).setRequest(request).build();
         // 2.x 使用 InstanceOperatorClientImpl
@@ -113,6 +114,10 @@ public class InstanceController {
         return "ok";
     }
 
+    /**
+     * uri：/nacos/v1/ns/instance
+     * 删除实例 的 delete请求
+     */
     @CanDistro
     @DeleteMapping
     @Secured(action = ActionTypes.WRITE)
@@ -122,11 +127,15 @@ public class InstanceController {
         String namespaceId = WebUtils.optional(request, CommonParams.NAMESPACE_ID, Constants.DEFAULT_NAMESPACE_ID);
         String serviceName = WebUtils.required(request, CommonParams.SERVICE_NAME);
         NamingUtils.checkServiceNameFormat(serviceName);
-        
+        // 删除实例
         getInstanceOperator().removeInstance(namespaceId, serviceName, instance);
         return "ok";
     }
 
+    /**
+     * uri：/nacos/v1/ns/instance
+     * 修改实例 的 put请求
+     */
     @CanDistro
     @PutMapping
     @Secured(action = ActionTypes.WRITE)
@@ -326,11 +335,7 @@ public class InstanceController {
     }
     
     /**
-     * Create a beat for instance.
-     *
-     * @param request http request
-     * @return detail information of instance
-     * @throws Exception any error during handle
+     * 1.0版本-客户端向服务端发送的心跳请求，当前是服务端接受到该请求
      */
     @CanDistro
     @PutMapping("/beat")
@@ -366,6 +371,7 @@ public class InstanceController {
                 serviceName, namespaceId);
         BeatInfoInstanceBuilder builder = BeatInfoInstanceBuilder.newBuilder();
         builder.setRequest(request);
+        // 服务端接受到客户端心跳的操作
         int resultCode = getInstanceOperator()
                 .handleBeat(namespaceId, serviceName, ip, port, clusterName, clientBeat, builder);
         result.put(CommonParams.CODE, resultCode);

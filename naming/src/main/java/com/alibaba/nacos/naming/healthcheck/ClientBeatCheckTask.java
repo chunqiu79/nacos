@@ -79,7 +79,10 @@ public class ClientBeatCheckTask implements BeatCheckTask {
     public String taskKey() {
         return KeyBuilder.buildServiceMetaKey(service.getNamespaceId(), service.getName());
     }
-    
+
+    /**
+     * 服务端心跳检查
+     */
     @Override
     public void run() {
         try {
@@ -87,6 +90,9 @@ public class ClientBeatCheckTask implements BeatCheckTask {
             if (ApplicationUtils.getBean(UpgradeJudgement.class).isUseGrpcFeatures()) {
                 return;
             }
+            /*
+             * 每个service都只会有1个服务端返回true
+             */
             if (!getDistroMapper().responsible(service.getName())) {
                 return;
             }

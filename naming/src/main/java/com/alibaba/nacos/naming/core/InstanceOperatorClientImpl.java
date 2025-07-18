@@ -221,12 +221,16 @@ public class InstanceOperatorClientImpl implements InstanceOperator {
             RsInfo clientBeat, BeatInfoInstanceBuilder builder) throws NacosException {
         Service service = getService(namespaceId, serviceName, true);
         String clientId = IpPortBasedClient.getClientId(ip + InternetAddressUtil.IP_PORT_SPLITER + port, true);
+        /*
+         * ClientManagerDelegate
+         */
         IpPortBasedClient client = (IpPortBasedClient) clientManager.getClient(clientId);
         if (null == client || !client.getAllPublishedService().contains(service)) {
             if (null == clientBeat) {
                 return NamingResponseCode.RESOURCE_NOT_FOUND;
             }
             Instance instance = builder.setBeatInfo(clientBeat).setServiceName(serviceName).build();
+            // 注册实例
             registerInstance(namespaceId, serviceName, instance);
             client = (IpPortBasedClient) clientManager.getClient(clientId);
         }
@@ -242,6 +246,7 @@ public class InstanceOperatorClientImpl implements InstanceOperator {
             clientBeat.setServiceName(serviceName);
         }
         ClientBeatProcessorV2 beatProcessor = new ClientBeatProcessorV2(namespaceId, clientBeat, client);
+        // 服务端一步处理心跳执行对应任务
         HealthCheckReactor.scheduleNow(beatProcessor);
         client.setLastUpdatedTime();
         return NamingResponseCode.OK;

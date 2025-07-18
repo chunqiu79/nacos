@@ -59,9 +59,9 @@ public class ServiceInfoHolder implements Closeable {
     private static final String USER_HOME_PROPERTY = "user.home";
 
     /**
-     * 客户端订阅的信息
-     * key-服务的唯一标识，类似服务名
-     * value-服务信息
+     * 客户端订阅的信息，客户端本地缓存
+     * key-被订阅的服务的唯一标识，类似服务名
+     * value-被订阅的服务信息
      */
     private final ConcurrentMap<String, ServiceInfo> serviceInfoMap;
     

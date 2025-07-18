@@ -75,6 +75,11 @@ public class DistroMapper extends MemberChangeListener {
     }
     
     /**
+     * 判断当前服务端是否对当前传入的 responsibleTag 进行处理
+     * 如果是v1版本的话，responsibleTag就是服务名，如果是v2版本的话，responsibleTag就是ip+":"+port
+     * 所以，其实就是把所有注册到nacos服务端的服务进行了划分（responsibleTag%servers.size()），其实就是一致性hash算法（redis也用了这个）
+     * 保证1个集群下只会有1个服务端对当前传入的responsibleTag返回true
+     *
      * Judge whether current server is responsible for input tag.
      *
      * @param responsibleTag responsible tag, serviceName for v1 and ip:port for v2
@@ -95,10 +100,23 @@ public class DistroMapper extends MemberChangeListener {
         String localAddress = EnvUtil.getLocalAddress();
         int index = servers.indexOf(localAddress);
         int lastIndex = servers.lastIndexOf(localAddress);
+        /*
+         * 如果本机地址不在健康节点列表中（即index和lastIndex都小于0），则返回true
+         * 这里为什么返回true？
+         * 实际上，当节点不在健康列表中时，通常意味着该节点已被排除在集群之外（如宕机），
+         * 但这里返回true可能是为了处理一些边界情况（例如节点刚刚启动还未加入健康列表），
+         * 让节点自己处理请求，避免出现所有节点都不处理的情况。但这种情况在实际运行中应该避免。
+         */
         if (lastIndex < 0 || index < 0) {
             return true;
         }
-        
+        /*
+         * 如：这里的的 responsibleTag 表示的是服务名
+         * 那么就是 每个服务端对属于自己的服务才返回true
+         * servers = ["A", "B", "C"]  // 健康节点
+         * localAddress = "B"        // 当前节点
+         * responsibleTag = "order-service" → 哈希取模后 target=1 (B的索引)
+         */
         int target = distroHash(responsibleTag) % servers.size();
         return target >= index && target <= lastIndex;
     }

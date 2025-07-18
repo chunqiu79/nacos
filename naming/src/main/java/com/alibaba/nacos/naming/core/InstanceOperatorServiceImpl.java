@@ -284,7 +284,10 @@ public class InstanceOperatorServiceImpl implements InstanceOperator {
             RsInfo clientBeat, BeatInfoInstanceBuilder builder) throws NacosException {
         com.alibaba.nacos.naming.core.Instance instance = serviceManager
                 .getInstance(namespaceId, serviceName, cluster, ip, port);
-        
+        /*
+         * 当前服务端的服务实例缓存中没有对应实例（说明可能过期了等）
+         * 需要重新注册
+         */
         if (instance == null) {
             if (clientBeat == null) {
                 return NamingResponseCode.RESOURCE_NOT_FOUND;
@@ -306,6 +309,7 @@ public class InstanceOperatorServiceImpl implements InstanceOperator {
             clientBeat.setPort(port);
             clientBeat.setCluster(cluster);
         }
+        // 服务端处理心跳
         service.processClientBeat(clientBeat);
         return NamingResponseCode.OK;
     }

@@ -80,6 +80,7 @@ public class ServiceManager implements RecordListener<Service> {
     
     /**
      * Map(namespace, Map(group::serviceName, Service)).
+     * 这个serviceName=groupName+"@@"+serviceName
      */
     private final Map<String, Map<String, Service>> serviceMap = new ConcurrentHashMap<>();
     
@@ -123,6 +124,9 @@ public class ServiceManager implements RecordListener<Service> {
      */
     @PostConstruct
     public void init() {
+        /*
+         * 同步心跳健康检查结果异步任务
+         */
         GlobalExecutor.scheduleServiceReporter(new ServiceReporter(), 60000, TimeUnit.MILLISECONDS);
         
         GlobalExecutor.submitServiceUpdateManager(new UpdatedServiceProcessor());
@@ -461,7 +465,7 @@ public class ServiceManager implements RecordListener<Service> {
                 service.getClusterMap().put(cluster.getName(), cluster);
             }
             service.validate();
-            
+            // 这里会将 key 添加到 listener 中
             putServiceAndInit(service);
             if (!local) {
                 addOrReplaceService(service);
@@ -480,13 +484,13 @@ public class ServiceManager implements RecordListener<Service> {
      * @throws Exception any error occurred in the process
      */
     public void registerInstance(String namespaceId, String serviceName, Instance instance) throws NacosException {
-        
+        // 创建空的service（内部 会将 key 添加到 listener 中）
         createEmptyService(namespaceId, serviceName, instance.isEphemeral());
         
         Service service = getService(namespaceId, serviceName);
         
         checkServiceIsNull(service, namespaceId, serviceName);
-        
+        // 添加实例
         addInstance(namespaceId, serviceName, instance.isEphemeral(), instance);
     }
     
@@ -640,7 +644,7 @@ public class ServiceManager implements RecordListener<Service> {
             
             Instances instances = new Instances();
             instances.setInstanceList(instanceList);
-            
+            // 跳转到 DelegateConsistencyServiceImpl
             consistencyService.put(key, instances);
         }
     }
@@ -672,7 +676,9 @@ public class ServiceManager implements RecordListener<Service> {
         
         Instances instances = new Instances();
         instances.setInstanceList(instanceList);
-        
+        /**
+         * DelegateConsistencyServiceImpl
+         */
         consistencyService.put(key, instances);
     }
     
@@ -767,7 +773,7 @@ public class ServiceManager implements RecordListener<Service> {
         
         Datum datum = consistencyService
                 .get(KeyBuilder.buildInstanceListKey(service.getNamespaceId(), service.getName(), ephemeral));
-        
+        // 获取当前服务的所有实例信息（只取所有临时实例或者只取所有永久实例）
         List<Instance> currentIPs = service.allIPs(ephemeral);
         Map<String, Instance> currentInstances = new HashMap<>(currentIPs.size());
         Set<String> currentInstanceIds = CollectionUtils.set();
@@ -776,11 +782,16 @@ public class ServiceManager implements RecordListener<Service> {
             currentInstances.put(instance.toIpAddr(), instance);
             currentInstanceIds.add(instance.getInstanceId());
         }
-        
+        /**
+         * 下面的操作其实就分为2步
+         * 1.将之前的实例信息放入到instanceMap
+         * 2.将当前参数的ips实例信息添加到instanceMap（当然如果是删除操作就是删除ips实例信息、如果是修改的话就更新即可）
+         */
         Map<String, Instance> instanceMap;
         if (datum != null && null != datum.value) {
             instanceMap = setValid(((Instances) datum.value).getInstanceList(), currentInstances);
         } else {
+            // 第1次注册，设置为空的
             instanceMap = new HashMap<>(ips.length);
         }
         
@@ -867,7 +878,16 @@ public class ServiceManager implements RecordListener<Service> {
     private void putServiceAndInit(Service service) throws NacosException {
         putService(service);
         service = getService(service.getNamespaceId(), service.getName());
+        /*
+         * 服务初始化
+         * 内部包含任务
+         */
         service.init();
+        /*
+         * 这里会将 key 添加到 listener 中 这里的 RecordListener 是 Service
+         * 临时的就是DistroConsistencyServiceImpl
+         * 永久的就是PersistentConsistencyServiceDelegateImpl
+         */
         consistencyService
                 .listen(KeyBuilder.buildInstanceListKey(service.getNamespaceId(), service.getName(), true), service);
         consistencyService

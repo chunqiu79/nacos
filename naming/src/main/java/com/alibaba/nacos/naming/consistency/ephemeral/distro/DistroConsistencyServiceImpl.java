@@ -102,7 +102,10 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
         this.globalConfig = globalConfig;
         this.distroProtocol = distroProtocol;
     }
-    
+
+    /**
+     * 初始化 Notifier 任务
+     */
     @PostConstruct
     public void init() {
         GlobalExecutor.submitDistroNotifyTask(notifier);
@@ -117,7 +120,9 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
         if (ApplicationUtils.getBean(UpgradeJudgement.class).isUseGrpcFeatures()) {
             return;
         }
-        // 开启 1秒的 延迟任务
+        /*
+         * 开启 1秒的 延迟任务（集群节点同步）
+         */
         distroProtocol.sync(new DistroKey(key, KeyBuilder.INSTANCE_LIST_KEY_PREFIX), DataOperation.CHANGE,
                 DistroConfig.getInstance().getSyncDelayMillis());
     }
@@ -415,6 +420,7 @@ public class DistroConsistencyServiceImpl implements EphemeralConsistencyService
             for (; ; ) {
                 try {
                     Pair<String, DataOperation> pair = tasks.take();
+                    // 异步任务处理
                     handle(pair);
                 } catch (Throwable e) {
                     Loggers.DISTRO.error("[NACOS-DISTRO] Error while handling notifying task", e);

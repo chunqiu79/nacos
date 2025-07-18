@@ -97,7 +97,12 @@ public class Service extends com.alibaba.nacos.api.naming.pojo.Service implement
      * TODO set customized push expire time.
      */
     private long pushCacheMillis = 0L;
-    
+
+    /**
+     * key-集群名字
+     * value-集群信息
+     * 当前服务的所有集群信息
+     */
     private Map<String, Cluster> clusterMap = new HashMap<>();
     
     public Service() {
@@ -194,7 +199,7 @@ public class Service extends com.alibaba.nacos.api.naming.pojo.Service implement
                 instance.setWeight(0.01D);
             }
         }
-        
+        // 更新实例信息
         updateIPs(value.getInstanceList(), KeyBuilder.matchEphemeralInstanceListKey(key));
         
         recalculateChecksum();
@@ -235,6 +240,10 @@ public class Service extends com.alibaba.nacos.api.naming.pojo.Service implement
      * @param ephemeral whether is ephemeral instance
      */
     public void updateIPs(Collection<Instance> instances, boolean ephemeral) {
+        /*
+         * key-集群
+         * value-集群对应的实例信息
+         */
         Map<String, List<Instance>> ipMap = new HashMap<>(clusterMap.size());
         for (String clusterName : clusterMap.keySet()) {
             ipMap.put(clusterName, new ArrayList<>());
@@ -275,10 +284,15 @@ public class Service extends com.alibaba.nacos.api.naming.pojo.Service implement
         for (Map.Entry<String, List<Instance>> entry : ipMap.entrySet()) {
             //make every ip mine
             List<Instance> entryIPs = entry.getValue();
+            // 更新实例信息
             clusterMap.get(entry.getKey()).updateIps(entryIPs, ephemeral);
         }
         
         setLastModifiedMillis(System.currentTimeMillis());
+        /*
+         * 发送服务变更事件
+         * 通知订阅当前服务信息的客户端
+         */
         getPushService().serviceChanged(this);
         ApplicationUtils.getBean(DoubleWriteEventListener.class).doubleWriteToV2(this, ephemeral);
         StringBuilder stringBuilder = new StringBuilder();

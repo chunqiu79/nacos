@@ -61,9 +61,8 @@ public class HealthCheckReactor {
     }
     
     /**
+     * 心跳
      * Schedule client beat check task with a delay.
-     *
-     * @param task client beat check task
      */
     public static void scheduleCheck(BeatCheckTask task) {
         Runnable wrapperTask =
